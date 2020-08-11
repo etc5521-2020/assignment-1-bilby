@@ -1,0 +1,26 @@
+---
+title: "ETC5521 Assignment 1"
+subtitle: "Your title"
+team: [FILL]
+author:
+  - [FILL]
+  - [FILL]
+date: "`r Sys.Date()`"
+output: 
+  html_document
+---
+
+[This assignment is for ETC5521 Assignment 1 by Team `r rmarkdown::metadata$team` comprising of `r knitr::combine_words(rmarkdown::metadata$author)`.]{style="color:#006DAE;"}
+
+
+# Introduction and motivation
+
+[FILL] Give the bigger picture of the data, and inspire the reader to learn more about the problem by reading your analysis. 
+
+# Data description
+
+# Analysis and findings
+
+[FILL] Should include at least one plot or numerical summary for each of your questions, that helps the reader arrive at an answer. You should also write paragraphs describing the methods, summaries and findings. 
+
+# References
