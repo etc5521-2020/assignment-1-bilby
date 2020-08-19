@@ -30,7 +30,7 @@ safer_parks <- read_csv("https://raw.githubusercontent.com/rfordatascience/tidyt
 
 intro: ...
 
-motivation: ...
+motivation: study the injuries record, find out the risky groups. In the future, amusement parks can pay more attention on those groups and entertaining equipments. Consequently, reduce the injuries occur in amusement parks and increase the well beings of society.
 
 # Data description
 
