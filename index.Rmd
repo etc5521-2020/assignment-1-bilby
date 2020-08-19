@@ -1,28 +1,53 @@
 ---
 title: "ETC5521 Assignment 1"
-subtitle: "Your title"
-team: [FILL]
+subtitle: "Amusement Park injuries"
+team: "bilby"
 author:
-  - [FILL]
+  - "Yuheng Cui"
   - [FILL]
 date: "`r Sys.Date()`"
 output: 
-  html_document
+  bookdown::html_document2
 ---
 
 [This assignment is for ETC5521 Assignment 1 by Team `r rmarkdown::metadata$team` comprising of `r knitr::combine_words(rmarkdown::metadata$author)`.]{style="color:#006DAE;"}
 
-```{r rawData}
-tx_injuries <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-09-10/tx_injuries.csv")
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, fig.align = "center")
+library(dplyr)
+library(visdat)
+library(readr)
+```
 
-safer_parks <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-09-10/saferparks.csv")
+```{r rawData, include = FALSE}
+tx_injuries <- read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-09-10/tx_injuries.csv")
+
+
+safer_parks <- read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-09-10/saferparks.csv")
 ```
 
 # Introduction and motivation
 
-[FILL] Give the bigger picture of the data, and inspire the reader to learn more about the problem by reading your analysis. 
+intro: ...
+
+motivation: ...
 
 # Data description
+
+The datasets are downloaded from [here](https://github.com/rfordatascience/tidytuesday/tree/master/data/2019/2019-09-10) from GitHub. The origin datasets are from [data.world](https://data.world/amillerbernd/texas-amusement-park-accidents) and [Safer Parks database](https://ridesdatabase.org/saferparks/data/).
+
+The source of data.world dataset is Texas Department of Insurance. This dataset recoreded all incidents at Texas amusement parks from 1st Feb 2013 to 1st Feb 2017. has `r dim(tx_injuries)[1]` observations and `r dim(tx_injuries)[2]` variables. Fig \@ref(fig:quality-of-tx) shows the dataset has too many missing values in **other** variable and many missing values in **serial_no** variable. Good news is these two variables has little effects on our analysis, thus, we can remove these two variables. **Age** should be converted to numeric variable and **injury_date** should be date variable.
+
+```{r quality-of-tx, fig.cap = "Texas amusement parks dataset"}
+vis_dat(tx_injuries)
+```
+
+
+The source of SaferParks dataset is The U.S. Consumer Product Safety Commission (CPSC). It has `r dim(safer_parks)[1]` observations and `r dim(safer_parks)[2]` variables. Fig \@ref(fig:quality-of-safer) shows 4 variables have too many missing values to be analysed, therefore, we ought to ignore them. **acc_date** should be converted to date variable. Although **manufacturer** has many missing values as well, we decided to keep it because it may be insightful.
+
+```{r quality-of-safer, fig.cap = "Saferparks dataset"}
+vis_dat(safer_parks)
+```
 
 # Analysis and findings
 
