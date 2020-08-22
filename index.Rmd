@@ -108,8 +108,22 @@ tx_gender_age%>%
   kable_styling(bootstrap_options = c("striped", "hover"))
 ```
 
+Because safer park dataset does not record individuals.
+
 
 ## Secondary question1: The most dangerous equipment in parks
+
+```{r safer-clean}
+safer_parks %>% 
+  mutate(acc_date = as.Date(acc_date, format = "%m/%d/%Y")) %>%  # convert acc-date from char to date variable
+  group_by(device_type) %>% 
+  summarise(tot_num_injuries = sum(num_injured)) %>% 
+  arrange(-tot_num_injuries) %>% 
+  head(10) %>% 
+  kable(caption = "Top 10 risky device type") %>% 
+  kable_styling(bootstrap_options = c("striped", "hover"))
+ 
+```
 
 
 # References
