@@ -17,6 +17,10 @@ knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, fig.align 
 library(dplyr)
 library(visdat)
 library(readr)
+library(tidyverse)
+library(lubridate)
+library(knitr)
+library(kableExtra)
 ```
 
 ```{r rawData, include = FALSE}
@@ -44,12 +48,68 @@ vis_dat(tx_injuries)
 
 The accidents records in the Saferparks dataset, on the other hand, originated from the U.S. state and federal safety agencies regulating amusement rides (Saferparks, 2020). It has `r dim(safer_parks)[1]` observations and `r dim(safer_parks)[2]` variables. Fig \@ref(fig:quality-of-safer) shows 4 variables have too many missing values to be analysed, therefore, we ought to ignore them. **acc_date** should be converted to date variable. Although **manufacturer** has many missing values as well, we decided to keep it because it may be insightful.
 
+```{r clean}
+tx_injuries %>% 
+  select(-other, -serial_no, -injury_report_rec) %>% 
+  mutate(age = as.numeric(age),
+         injury_date = as.Date(injury_date, format = "%m-%d-%Y")) # convert to date?
+```
+
 ```{r quality-of-safer, fig.cap = "Saferparks dataset"}
 vis_dat(safer_parks)
 ```
 
 # Analysis and findings
 
-[FILL] Should include at least one plot or numerical summary for each of your questions, that helps the reader arrive at an answer. You should also write paragraphs describing the methods, summaries and findings. 
+## Primary question: what is the characteristics of high-risk group?
+
+```{r tx-pm1, fig.cap = "Line plot for age"}
+tx_gender_age <- tx_injuries %>%
+  # remove missing values in gender
+  filter(!is.na(gender)) %>% 
+  mutate(gender = recode(gender,
+                         "m" = "M",
+                         "f" = "F")) %>% # unify gender format
+  mutate(age = as.numeric(age)) %>%
+  # remove missing values in age
+  filter(!is.na(age)) 
+
+tx_ob <- nrow(tx_gender_age)
+  
+tx_gender_age %>% 
+  count(age, sort = FALSE) %>% 
+  mutate(percentage = n*100/tx_ob) %>% 
+  ggplot(aes(x = age, y = percentage)) + 
+  geom_line() +
+  geom_smooth()
+```
+
+
+```{r tx-pm1-tab}
+tx_gender_age %>% 
+  group_by(age) %>% 
+  count() %>% 
+  arrange(-n) %>% 
+  head(10) %>% 
+  kable(caption = "Top 10 risky age group") %>% 
+  kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
+```{r tx-pm1-gender}
+tx_gender_age%>% 
+  group_by(gender, age) %>% 
+  count(gender,age) %>% 
+  ungroup() %>% 
+  mutate(percent = round(n*100/tx_ob, 2)) %>% 
+  select(-n) %>% 
+  arrange(-percent) %>% 
+  head(10) %>% 
+  kable(caption = "Top 10 risky group") %>% 
+  kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
+
+## Secondary question1: The most dangerous equipment in parks
+
 
 # References
