@@ -4,7 +4,7 @@ subtitle: "Amusement Park injuries"
 team: "bilby"
 author:
   - "Yuheng Cui"
-  - [FILL]
+  - "Jimmy Effendy"
 date: "`r Sys.Date()`"
 output: 
   bookdown::html_document2
@@ -34,16 +34,15 @@ motivation: study the injuries record, find out the risky groups. In the future,
 
 # Data description
 
-The datasets are downloaded from [here](https://github.com/rfordatascience/tidytuesday/tree/master/data/2019/2019-09-10) from GitHub. The origin datasets are from [data.world](https://data.world/amillerbernd/texas-amusement-park-accidents) and [Safer Parks database](https://ridesdatabase.org/saferparks/data/).
+The datasets are downloaded from [here](https://github.com/rfordatascience/tidytuesday/tree/master/data/2019/2019-09-10) from GitHub. There are two datasets provided in the repository; one originated from [data.world](https://data.world/amillerbernd/texas-amusement-park-accidents) and another from [Safer Parks database](https://ridesdatabase.org/saferparks/data/).
 
-The source of data.world dataset is Texas Department of Insurance. This dataset recoreded all incidents at Texas amusement parks from 1st Feb 2013 to 1st Feb 2017. has `r dim(tx_injuries)[1]` observations and `r dim(tx_injuries)[2]` variables. Fig \@ref(fig:quality-of-tx) shows the dataset has too many missing values in **other** variable and many missing values in **serial_no** variable. Good news is these two variables has little effects on our analysis, thus, we can remove these two variables. **Age** should be converted to numeric variable and **injury_date** should be date variable.
+The data.world dataset is about all incidents occurred at amusement parks in Texas in 1st of February 2013 to 1st of February 2017 recorded by Texas Department of Insurance (data.world, 2020). This dataset has `r dim(tx_injuries)[1]` number of observations and `r dim(tx_injuries)[2]` number of variables. Fig \@ref(fig:quality-of-tx) shows the dataset has too many missing values in **other** variable and many missing values in **serial_no** variable. Good news is that these two variables has little effects on our analysis, thus, we can remove these two variables. **Age** should be converted to numeric variable and **injury_date** should be date variable.
 
 ```{r quality-of-tx, fig.cap = "Texas amusement parks dataset"}
 vis_dat(tx_injuries)
 ```
 
-
-The source of SaferParks dataset is The U.S. Consumer Product Safety Commission (CPSC). It has `r dim(safer_parks)[1]` observations and `r dim(safer_parks)[2]` variables. Fig \@ref(fig:quality-of-safer) shows 4 variables have too many missing values to be analysed, therefore, we ought to ignore them. **acc_date** should be converted to date variable. Although **manufacturer** has many missing values as well, we decided to keep it because it may be insightful.
+The accidents records in the Saferparks dataset, on the other hand, originated from the U.S. state and federal safety agencies regulating amusement rides (Saferparks, 2020). It has `r dim(safer_parks)[1]` observations and `r dim(safer_parks)[2]` variables. Fig \@ref(fig:quality-of-safer) shows 4 variables have too many missing values to be analysed, therefore, we ought to ignore them. **acc_date** should be converted to date variable. Although **manufacturer** has many missing values as well, we decided to keep it because it may be insightful.
 
 ```{r quality-of-safer, fig.cap = "Saferparks dataset"}
 vis_dat(safer_parks)
