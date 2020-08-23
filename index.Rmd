@@ -8,6 +8,8 @@ author:
 date: "`r Sys.Date()`"
 output: 
   bookdown::html_document2
+bibliography: references.bib
+biblio-style: authoryear-comp
 ---
 
 [This assignment is for ETC5521 Assignment 1 by Team `r rmarkdown::metadata$team` comprising of `r knitr::combine_words(rmarkdown::metadata$author)`.]{style="color:#006DAE;"}
@@ -21,6 +23,8 @@ library(tidyverse)
 library(lubridate)
 library(knitr)
 library(kableExtra)
+library(tidytext)
+library(wordcloud)
 ```
 
 ```{r rawData, include = FALSE}
@@ -71,12 +75,14 @@ First, we need to clean the data. The missing values in age and gender is remove
 tx_gender_age <- tx_injuries %>%
   # remove missing values in gender
   filter(!is.na(gender)) %>% 
+  # remove missing values in age
+  filter(!is.na(age)) %>% 
   mutate(gender = recode(gender,
                          "m" = "M",
                          "f" = "F")) %>% # unify gender record
-  mutate(age = as.numeric(age)) %>%
-  # remove missing values in age
-  filter(!is.na(age)) 
+  mutate(age = as.numeric(age))
+  
+   
 
 tx_ob <- nrow(tx_gender_age)
   
@@ -147,9 +153,9 @@ If we take gender into account, we can see gender distributions by age. Table \@
 In summary, parents really need to pay more attention on their babies in amusement parks. And any children (under 18) need to draw the parks staff's attention. 
 
 
-## Secondary question1: what is the most dangerous equipment in parks?
+## Secondary question1: what is the most dangerous equipment in parks and what is the most body parts injuried?
 
-First secondary question is "what is the most dangerous equipment in parks". 
+First secondary question is "what is the most dangerous equipment in parks". We count the total number of injuries by device type. Table \@ref(tab:safer-quip) shows top-10 rankings of high-risk equipment. It is not surprising that roller coaster is the equipment that causes the most injuries. 
 
 ```{r safer-equip}
 safer_parks %>% 
@@ -159,9 +165,20 @@ safer_parks %>%
   head(10) %>% 
   kable(caption = "Top 10 risky device type") %>% 
   kable_styling(bootstrap_options = c("striped", "hover"))
- 
+```
+
+```{r sq1-wordcloud, fig.cap = "Injury description --- word cloud", out.height= '100%', out.width= '100%'}
+data(stop_words)
+safer_parks %>% 
+  select(injury_desc) %>% 
+  unnest_tokens(word, injury_desc) %>% 
+  anti_join(stop_words) %>% 
+  count(word) %>% 
+  with(wordcloud(word, n ,max.words = 80))
+
 ```
 
 
-
 # References
+
+visdat [@visdat]
