@@ -48,11 +48,11 @@ vis_dat(tx_injuries)
 
 The accidents records in the Saferparks dataset, on the other hand, originated from the U.S. state and federal safety agencies regulating amusement rides (Saferparks, 2020). It has `r dim(safer_parks)[1]` observations and `r dim(safer_parks)[2]` variables. Fig \@ref(fig:quality-of-safer) shows 4 variables have too many missing values to be analysed, therefore, we ought to ignore them. **acc_date** should be converted to date variable. Although **manufacturer** has many missing values as well, we decided to keep it because it may be insightful.
 
-```{r clean}
+```{r clean,eval= FALSE}
 tx_injuries %>% 
   select(-other, -serial_no, -injury_report_rec) %>% 
   mutate(age = as.numeric(age),
-         injury_date = as.Date(injury_date, format = "%m-%d-%Y")) # convert to date?
+         injury_date = as.Date(injury_date, format = "%m/%d/%Y")) # convert to date?
 ```
 
 ```{r quality-of-safer, fig.cap = "Saferparks dataset"}
@@ -61,7 +61,11 @@ vis_dat(safer_parks)
 
 # Analysis and findings
 
-## Primary question: what is the characteristics of high-risk group?
+## Primary question: what are the high-risk groups?
+
+The primary question in this report is to find out the high-risk group. Consequently, draw parks attention to pay more attention on these groups for their safety. We mainly analyse the age and gender for the primary quesiton. The Saferparks dataset cannot be used here, because the dataset record injury records instead of individuals; that is, we do not know the ages of each injuried. 
+
+First, we need to clean the data. The missing values in age and gender is removed and the variable type is converted from character to numeric. Second, we unify the records in gender because some observations record gender male as 'M' while others record as 'm'. Third, calculate the percentage of each age group.
 
 ```{r tx-pm1, fig.cap = "Line plot for age"}
 tx_gender_age <- tx_injuries %>%
@@ -69,7 +73,7 @@ tx_gender_age <- tx_injuries %>%
   filter(!is.na(gender)) %>% 
   mutate(gender = recode(gender,
                          "m" = "M",
-                         "f" = "F")) %>% # unify gender format
+                         "f" = "F")) %>% # unify gender record
   mutate(age = as.numeric(age)) %>%
   # remove missing values in age
   filter(!is.na(age)) 
@@ -81,17 +85,22 @@ tx_gender_age %>%
   mutate(percentage = n*100/tx_ob) %>% 
   ggplot(aes(x = age, y = percentage)) + 
   geom_line() +
-  geom_smooth()
+  geom_hline(yintercept = 1, color = 'red')
+
 ```
+
+Fig \@ref(fig:tx-pm1) illustrates the distribution of injuried ages. Surprisingly, the most injuried were babies. The red line indicate 1 percent. Below this line, we believe the injuried cases were relatively rare.
 
 
 ```{r tx-pm1-tab}
 tx_gender_age %>% 
   group_by(age) %>% 
   count() %>% 
-  arrange(-n) %>% 
+  mutate(percent = n*100/tx_ob) %>% 
+  arrange(-percent) %>% 
+  select(-n) %>% 
   head(10) %>% 
-  kable(caption = "Top 10 risky age group") %>% 
+  kable(caption = "Top 10 risky age group in amusement parks in Texas") %>% 
   kable_styling(bootstrap_options = c("striped", "hover"))
 ```
 
@@ -104,18 +113,46 @@ tx_gender_age%>%
   select(-n) %>% 
   arrange(-percent) %>% 
   head(10) %>% 
-  kable(caption = "Top 10 risky group") %>% 
+  kable(caption = "Top 10 risky group by gender in amusement parks in Texas") %>% 
   kable_styling(bootstrap_options = c("striped", "hover"))
 ```
 
-Because safer park dataset does not record individuals.
+```{r tx-pm1-pct, include = FALSE}
+tx_kid <- tx_gender_age %>% 
+  group_by(age) %>% 
+  count() %>% 
+  mutate(percent = n*100/tx_ob) %>% 
+  arrange(-percent) %>% 
+  ungroup() %>% 
+  filter(age < 18 & age > 0) %>% 
+  pull(percent) %>% 
+  sum()
+
+tx_kid_fe <- tx_gender_age%>% 
+  group_by(gender, age) %>% 
+  count(gender,age) %>% 
+  ungroup() %>% 
+  mutate(percent = round(n*100/tx_ob, 2)) %>% 
+  filter(gender == "F" & age < 18 & age >0) %>% 
+  pull(percent) %>% 
+  sum()
+
+tx_kid_m <- tx_kid - tx_kid_fe
+```
+
+Table \@ref(tab:tx-pm1-tab) shows the ranking of injuried ages. Injuried babies occupies nearly 10% of the dataset. In the dataset `r round(tx_kid, 2)` percent injuried are under 18, except babies. We distinguish babies from other age groups because babies are carried by their parents and babies are not able to move to any places by their own. 
+
+If we take gender into account, we can see gender distributions by age. Table \@ref(tab:tx-pm1-gender) shows the top-10 rankings by gender and age. In top-10 list, it seems that more girls get injuried than boys in amusement parks in Texas. However, if we look at the whole dataset, age between  1 and 16, `r round(tx_kid_fe, 2)` percent are girls while `r round(tx_kid_m, 2)` are boys.
+
+In summary, parents really need to pay more attention on their babies in amusement parks. And any children (under 18) need to draw the parks staff's attention. 
 
 
-## Secondary question1: The most dangerous equipment in parks
+## Secondary question1: what is the most dangerous equipment in parks?
 
-```{r safer-clean}
+First secondary question is "what is the most dangerous equipment in parks". 
+
+```{r safer-equip}
 safer_parks %>% 
-  mutate(acc_date = as.Date(acc_date, format = "%m/%d/%Y")) %>%  # convert acc-date from char to date variable
   group_by(device_type) %>% 
   summarise(tot_num_injuries = sum(num_injured)) %>% 
   arrange(-tot_num_injuries) %>% 
@@ -124,6 +161,7 @@ safer_parks %>%
   kable_styling(bootstrap_options = c("striped", "hover"))
  
 ```
+
 
 
 # References
