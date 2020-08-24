@@ -34,7 +34,7 @@ tx_injuries <- read_csv("https://raw.githubusercontent.com/rfordatascience/tidyt
 safer_parks <- read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-09-10/saferparks.csv")
 ```
 
-# Introduction and motivation
+# Introduction and Motivation
 
 intro: Families and friends tend to spend their holidays and weekends in amusement parks. There are 25 amusement parks in Texas already [@wiki]. Indeed, amusement parks are good place for kids and young people, but there are also much news reporting accidents in amusement park, and some news are horrible. These news remind people to take care of themselves when playing. More importantly, amusement parks should reduce the probability of machenical failure and operation errors.
 
@@ -46,30 +46,35 @@ motivation: study the injury record, find out the risky groups. In the future, a
 Encouraging exploration of other sections:
 
 Data sources:
-The datasets are downloaded from [here](https://github.com/rfordatascience/tidytuesday/tree/master/data/2019/2019-09-10) from GitHub. There are two datasets provided in the repository; one originated from [data.world](https://data.world/amillerbernd/texas-amusement-park-accidents) and another from [Safer Parks database](https://ridesdatabase.org/saferparks/data/).
+The datasets are downloaded from [here](https://github.com/rfordatascience/tidytuesday/tree/master/data/2019/2019-09-10) from GitHub. There are two datasets provided in the repository; one originated from [data.world](https://data.world/amillerbernd/texas-amusement-park-accidents) and another from [Saferparks database](https://ridesdatabase.org/saferparks/data/).
 
-*data limitation*
+# Data Description
 
-Despite the missing value issue, the Saferparks dataset has two major limitations [@saferpark]:
+The data.world data set originated from Texas Department of Insurance (TDI) [@dataworld]. It is a record of any injuries caused by an amusement ride from February the 1st 2013 to February the 1st 2017 occurring in the State of Texas (data.world, 2020). An amusement ride is "any mechanical, gravity, or water device or devices that carry or convey passengers along, around, or over a fixed or restricted route or course or within a defined area for the purpose of giving its passengers amusement, pleasure, or excitement" [@tdi]. According to TDI [-@tdi], a quarterly injury report needed to be submitted by amusement ride owners and operators. TDI further stated that this record relates to any injuries that require medical treatment or result in death. 
 
-* The data varies widely in content and consistency, because only half of U.S states have provided accident data
-* States with stronger government oversight tend to log more accidents.
-
-After all, the dataset still provides some insights about amusement park injury, although it could not be used for predicting nation-wide patterns.
-
-# Data description
-
-The data.world dataset originated from Texas Department of Insurance. It is a record of any injuries caused by an amusement ride from February the 1st 2013 to February the 1st 2017 occurring in the State of Texas (data.world, 2020). According to Texas Department of Insurance (2020), a quarterly injury report needed to be submitted by amusement ride owners and operators. This dataset has `r dim(tx_injuries)[1]` number of observations and `r dim(tx_injuries)[2]` number of variables. Fig \@ref(fig:quality-of-tx) shows the dataset has too many missing values in **other** variable and many missing values in **serial_no** variable. Good news is that these two variables has little effects on our analysis, thus, we can remove these two variables. **Age** should be converted to numeric variable and **injury_date** should be date variable.
+This dataset has `r nrow(tx_injuries)` number of observations and `r ncol(tx_injuries)` number of variables. Fig \@ref(fig:quality-of-tx) shows the data set has too many missing values in **other** variable and many missing values in **serial_no** variable. Good news is that these two variables has little effects on our analysis, thus, we can remove these two variables. **Age** should be converted to numeric variable and **injury_date** should be date variable.
 
 ```{r quality-of-tx, fig.cap = "Texas amusement parks dataset"}
 vis_dat(tx_injuries)
 ```
 
-The accidents records in the Saferparks dataset, on the other hand, originated from the U.S. state and federal safety agencies regulating amusement rides (Saferparks, 2020). It has `r dim(safer_parks)[1]` observations and `r dim(safer_parks)[2]` variables. Fig \@ref(fig:quality-of-safer) shows 4 variables have too many missing values to be analysed, therefore, we ought to ignore them. **acc_date** should be converted to date variable. Although **manufacturer** has many missing values as well, we decided to keep it because it may be insightful.
+The accidents records in the Saferparks data set, on the other hand, originated from the U.S. state and federal safety agencies regulating amusement rides [@saferparks]. As a result, Saferparks needs to harmonize them into their database. It is important to note that reporting criteria and its level of details, types of equipment included, and years covered vary widely by year, industry sector, jurisdictions, and other factors [@saferparks]. While the data set can be used to uncover insights of how patrons are hurt in amusement rides, Saferparks do not recommend the data set to be used for comparison across states, parks, rides or years [@saferparks]. 
+
+It has `r nrow(safer_parks)` observations and `r ncol(safer_parks)` variables. Fig \@ref(fig:quality-of-safer) shows 4 variables have too many missing values to be analysed, therefore, we ought to ignore them. **acc_date** should be converted to date variable. Although **manufacturer** has many missing values as well, we decided to keep it because it may be insightful.
 
 ```{r quality-of-safer, fig.cap = "Saferparks dataset"}
 vis_dat(safer_parks)
 ```
+
+## Data Limitation
+
+Despite the missing value issue, the Saferparks data set has two major limitations [@saferpark]:
+
+* The data varies widely in content and consistency, because only half of U.S states have provided accident data
+* States with stronger government oversight tend to log more accidents.
+
+After all, the data set still provides some insights about amusement park injury, although it could not be used for predicting nation-wide patterns.
+
 
 ## Data Cleaning and Transformation
 
