@@ -36,9 +36,12 @@ safer_parks <- read_csv("https://raw.githubusercontent.com/rfordatascience/tidyt
 
 # Introduction and Motivation
 
-intro: Families and friends tend to spend their holidays and weekends in amusement parks. There are 25 amusement parks in Texas already [@wiki]. Indeed, amusement parks are good place for kids and young people, but there are also much news reporting accidents in amusement park, and some news are horrible. These news remind people to take care of themselves when playing. More importantly, amusement parks should reduce the probability of machenical failure and operation errors.
+intro: Families and friends tend to spend their holidays and weekends in amusement parks. The popularity of amusement park has been growing in popularity in recent years, with worldwide attendance at the top 10 amusement park groups reached half a billion mark for the first time last year [@schneider_2019], with 4% year-on-year growth [@tea2019].
 
-https://www.usnews.com/news/best-states/florida/articles/2019-05-23/theme-park-attendance-crosses-half-billion-mark-for-1st-time
+With this ever increasing popularity, it is therefore not unreasonable to consider that the safety of amusement rides is a subject of substantial public interests
+[@WOODCOCK2019171]. 
+
+There are 25 amusement parks in Texas already [@wiki]. Indeed, amusement parks are good place for kids and young people, but there are also much news reporting accidents in amusement park, and some news are horrible. These news remind people to take care of themselves when playing. More importantly, amusement parks should reduce the probability of machenical failure and operation errors.
 
 
 motivation: study the injury record, find out the risky groups. In the future, amusement parks can pay more attention on those groups and equipments. Consequently, reduce the injuries occur in amusement parks and increase the well beings of society.
@@ -52,13 +55,13 @@ The datasets are downloaded from [here](https://github.com/rfordatascience/tidyt
 
 The data.world data set originated from Texas Department of Insurance (TDI) [@dataworld]. It is a record of any injuries caused by an amusement ride from February the 1st 2013 to February the 1st 2017 occurring in the State of Texas (data.world, 2020). An amusement ride is "any mechanical, gravity, or water device or devices that carry or convey passengers along, around, or over a fixed or restricted route or course or within a defined area for the purpose of giving its passengers amusement, pleasure, or excitement" [@tdi]. According to TDI [-@tdi], a quarterly injury report needed to be submitted by amusement ride owners and operators. TDI further stated that this record relates to any injuries that require medical treatment or result in death. 
 
-This dataset has `r nrow(tx_injuries)` number of observations and `r ncol(tx_injuries)` number of variables. Fig \@ref(fig:quality-of-tx) shows the data set has too many missing values in **other** variable and many missing values in **serial_no** variable. Good news is that these two variables has little effects on our analysis, thus, we can remove these two variables. **Age** should be converted to numeric variable and **injury_date** should be date variable.
+This data set has `r nrow(tx_injuries)` number of observations and `r ncol(tx_injuries)` number of variables. Fig \@ref(fig:quality-of-tx) shows the data set has too many missing values in **other** variable and many missing values in **serial_no** variable. Good news is that these two variables has little effects on our analysis, thus, we can remove these two variables. **Age** should be converted to numeric variable and **injury_date** should be date variable.
 
 ```{r quality-of-tx, fig.cap = "Texas amusement parks dataset"}
 vis_dat(tx_injuries)
 ```
 
-The accidents records in the Saferparks data set, on the other hand, originated from the U.S. state and federal safety agencies regulating amusement rides [@saferparks]. As a result, Saferparks needs to harmonize them into their database. It is important to note that reporting criteria and its level of details, types of equipment included, and years covered vary widely by year, industry sector, jurisdictions, and other factors [@saferparks]. While the data set can be used to uncover insights of how patrons are hurt in amusement rides, Saferparks do not recommend the data set to be used for comparison across states, parks, rides or years [@saferparks]. 
+The accidents records in the Saferparks data set, on the other hand, originated from the U.S. State and Federal safety agencies regulating amusement rides [@saferparks]. Saferparks achieved this by submitting public records requests to those agencies (both federal and states agencies). In some cases, additional requests were submitted to specific agencies to achieve particular goals [@saferparks]. As a result, Saferparks needs to harmonize these data sets into their database.  
 
 It has `r nrow(safer_parks)` observations and `r ncol(safer_parks)` variables. Fig \@ref(fig:quality-of-safer) shows 4 variables have too many missing values to be analysed, therefore, we ought to ignore them. **acc_date** should be converted to date variable. Although **manufacturer** has many missing values as well, we decided to keep it because it may be insightful.
 
@@ -67,6 +70,10 @@ vis_dat(safer_parks)
 ```
 
 ## Data Limitation
+
+According to Saferparks [-@saferparks], reporting criteria and its level of details, types of equipment included, and years covered vary widely by year, industry sector, jurisdictions, and other factors [@saferparks]. 
+
+While the data set can be used to uncover insights of how patrons are hurt in amusement rides, Saferparks do not recommend the data set to be used for comparison across states, parks, rides or years [@saferparks].
 
 Despite the missing value issue, the Saferparks data set has two major limitations [@saferpark]:
 
@@ -77,6 +84,8 @@ After all, the data set still provides some insights about amusement park injury
 
 
 ## Data Cleaning and Transformation
+
+*possibly need to convert some variables to factors*
 
 ```{r clean}
 tx_injuries %>% 
