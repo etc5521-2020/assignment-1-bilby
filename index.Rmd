@@ -36,13 +36,10 @@ safer_parks <- read_csv("https://raw.githubusercontent.com/rfordatascience/tidyt
 
 # Introduction and motivation
 
-<<<<<<< HEAD
 intro: Families and friends tend to spend their holidays and weekends in amusement parks. There are 25 amusement parks in Texas already [@wiki]. Indeed, amusement parks are good place for kids and young people, but there are also much news reporting accidents in amusement park, and some news are horrible. These news remind people to take care of themselves when playing. More importantly, amusement parks should reduce the probability of machenical failure and operation errors.
-=======
-intro: 
 
 https://www.usnews.com/news/best-states/florida/articles/2019-05-23/theme-park-attendance-crosses-half-billion-mark-for-1st-time
->>>>>>> jeffendy
+
 
 motivation: study the injury record, find out the risky groups. In the future, amusement parks can pay more attention on those groups and equipments. Consequently, reduce the injuries occur in amusement parks and increase the well beings of society.
 
@@ -53,6 +50,12 @@ The datasets are downloaded from [here](https://github.com/rfordatascience/tidyt
 
 *data limitation*
 
+Despite the missing value issue, the Saferparks dataset has two major limitations [@saferpark]:
+
+* The data varies widely in content and consistency, because only half of U.S states have provided accident data
+* States with stronger government oversight tend to log more accidents.
+
+After all, the dataset still provides some insights about amusement park injury, although it could not be used for predicting nation-wide patterns.
 
 # Data description
 
@@ -62,21 +65,6 @@ The data.world dataset originated from Texas Department of Insurance. It is a re
 vis_dat(tx_injuries)
 ```
 
-<<<<<<< HEAD
-The accidents records in the Saferparks dataset, on the other hand, originated from the U.S. state and federal safety agencies regulating amusement rides (Saferparks, 2020). It has `r dim(safer_parks)[1]` observations and `r dim(safer_parks)[2]` variables. Fig \@ref(fig:quality-of-safer) shows 4 variables have too many missing values to be analysed, therefore, we ought to ignore them. **acc_date** should be converted to date variable. 
-
-```{r quality-of-safer, fig.cap = "Saferparks dataset"}
-vis_dat(safer_parks)
-```
-
-Despite the missing value issue, the Saferparks dataset has two major limitations [@saferpark]:
-
-* The data varies widely in content and consistency, because only half of U.S states have provided accident data
-* States with stronger government oversight tend to log more accidents.
-
-After all, the dataset still provides some insights about amusement park injury, although it could not be used for predicting nation-wide patterns.
-
-=======
 The accidents records in the Saferparks dataset, on the other hand, originated from the U.S. state and federal safety agencies regulating amusement rides (Saferparks, 2020). It has `r dim(safer_parks)[1]` observations and `r dim(safer_parks)[2]` variables. Fig \@ref(fig:quality-of-safer) shows 4 variables have too many missing values to be analysed, therefore, we ought to ignore them. **acc_date** should be converted to date variable. Although **manufacturer** has many missing values as well, we decided to keep it because it may be insightful.
 
 ```{r quality-of-safer, fig.cap = "Saferparks dataset"}
@@ -92,7 +80,6 @@ tx_injuries %>%
          injury_date = as.Date(injury_date, format = "%m-%d-%Y")) # convert to date?
 ```
 
->>>>>>> jeffendy
 # Analysis and findings
 
 ## Primary question: what are the high-risk groups?
