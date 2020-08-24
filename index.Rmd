@@ -32,15 +32,23 @@ safer_parks <- read_csv("https://raw.githubusercontent.com/rfordatascience/tidyt
 
 # Introduction and motivation
 
-intro: ...
+intro: 
+
+https://www.usnews.com/news/best-states/florida/articles/2019-05-23/theme-park-attendance-crosses-half-billion-mark-for-1st-time
 
 motivation: study the injuries record, find out the risky groups. In the future, amusement parks can pay more attention on those groups and entertaining equipments. Consequently, reduce the injuries occur in amusement parks and increase the well beings of society.
 
-# Data description
+Encouraging exploration of other sections:
 
+Data sources:
 The datasets are downloaded from [here](https://github.com/rfordatascience/tidytuesday/tree/master/data/2019/2019-09-10) from GitHub. There are two datasets provided in the repository; one originated from [data.world](https://data.world/amillerbernd/texas-amusement-park-accidents) and another from [Safer Parks database](https://ridesdatabase.org/saferparks/data/).
 
-The data.world dataset is about all incidents occurred at amusement parks in Texas in 1st of February 2013 to 1st of February 2017 recorded by Texas Department of Insurance (data.world, 2020). This dataset has `r dim(tx_injuries)[1]` number of observations and `r dim(tx_injuries)[2]` number of variables. Fig \@ref(fig:quality-of-tx) shows the dataset has too many missing values in **other** variable and many missing values in **serial_no** variable. Good news is that these two variables has little effects on our analysis, thus, we can remove these two variables. **Age** should be converted to numeric variable and **injury_date** should be date variable.
+*data limitation*
+
+
+# Data description
+
+The data.world dataset originated from Texas Department of Insurance. It is a record of any injuries caused by an amusement ride from February the 1st 2013 to February the 1st 2017 occurring in the State of Texas (data.world, 2020). According to Texas Department of Insurance (2020), a quarterly injury report needed to be submitted by amusement ride owners and operators. This dataset has `r dim(tx_injuries)[1]` number of observations and `r dim(tx_injuries)[2]` number of variables. Fig \@ref(fig:quality-of-tx) shows the dataset has too many missing values in **other** variable and many missing values in **serial_no** variable. Good news is that these two variables has little effects on our analysis, thus, we can remove these two variables. **Age** should be converted to numeric variable and **injury_date** should be date variable.
 
 ```{r quality-of-tx, fig.cap = "Texas amusement parks dataset"}
 vis_dat(tx_injuries)
@@ -48,15 +56,17 @@ vis_dat(tx_injuries)
 
 The accidents records in the Saferparks dataset, on the other hand, originated from the U.S. state and federal safety agencies regulating amusement rides (Saferparks, 2020). It has `r dim(safer_parks)[1]` observations and `r dim(safer_parks)[2]` variables. Fig \@ref(fig:quality-of-safer) shows 4 variables have too many missing values to be analysed, therefore, we ought to ignore them. **acc_date** should be converted to date variable. Although **manufacturer** has many missing values as well, we decided to keep it because it may be insightful.
 
+```{r quality-of-safer, fig.cap = "Saferparks dataset"}
+vis_dat(safer_parks)
+```
+
+## Data Cleaning and Transformation
+
 ```{r clean}
 tx_injuries %>% 
   select(-other, -serial_no, -injury_report_rec) %>% 
   mutate(age = as.numeric(age),
          injury_date = as.Date(injury_date, format = "%m-%d-%Y")) # convert to date?
-```
-
-```{r quality-of-safer, fig.cap = "Saferparks dataset"}
-vis_dat(safer_parks)
 ```
 
 # Analysis and findings
