@@ -36,22 +36,21 @@ safer_parks <- read_csv("https://raw.githubusercontent.com/rfordatascience/tidyt
 
 # Introduction and Motivation
 
-intro: Families and friends tend to spend their holidays and weekends in amusement parks. The popularity of amusement park has been growing in popularity in recent years, with worldwide attendance at the top 10 amusement park groups reached half a billion mark for the first time last year [@schneider_2019], with 4% year-on-year growth [@tea2019].
+Families and friends tend to spend their holidays and weekends in amusement parks. The popularity of amusement park has been growing in popularity in recent years, with worldwide attendance at the top 10 amusement park groups reached half a billion mark for the first time last year [@schneider_2019], with 4% year-on-year growth [@tea2019].
 
-With this ever increasing popularity, it is therefore not unreasonable to consider that the safety of amusement rides is a subject of substantial public interests
-[@WOODCOCK2019171]. 
+With this ever increasing popularity, it is therefore not unreasonable to consider that the safety of amusement rides is a subject to substantial public interests [@WOODCOCK2019171]. It was estimated that the annual number of ride-related injuries in North America was 1,289 in 2018; which is 26% higher compared to 2017 [@ipaa_2018]. International Association of Amusement Parks and Attractions further stated that approximately 11% of those injuries are "serious", meaning they result in urgent admission and hospitalization for more than 24 hours for non-medical observation reasons, or causes fatality.
 
-There are 25 amusement parks in Texas already [@wiki]. Indeed, amusement parks are good place for kids and young people, but there are also much news reporting accidents in amusement park, and some news are horrible. These news remind people to take care of themselves when playing. More importantly, amusement parks should reduce the probability of machenical failure and operation errors.
+While accidents occurred in amusement parks are arguably not frequent, they generate prominent effects when they happen. International Association of Amusement Parks and Attractions [@-iaapa_2017] reported that following a ride malfunction in Australia killing four people, the park and also other venues in Australia suffer considerable declines in attendance. This shows that public confidence, safety, and commercial feasibility are strongly linked [@WOODCOCK2019171].
 
+There are 25 amusement parks in Texas already [@wiki]. Indeed, amusement parks are good place for kids and young people, but there are also much news reporting accidents in amusement park, and some news are horrible. These news remind people to take care of themselves when playing. More importantly, amusement parks should reduce the probability of mechanical failure and operation errors.
 
-motivation: study the injury record, find out the risky groups. In the future, amusement parks can pay more attention on those groups and equipments. Consequently, reduce the injuries occur in amusement parks and increase the well beings of society.
+Thorough evaluations to injury records related to amusement parks are aligned with public interests and are integral to encourage constant improvement. This paper intends to find factors that have major influence to amusement ride accidents. Uncovering this insight may encourage amusement park owners to utilize their resources more wisely in favor of those groups or equipment that are at the most risk. In addition, this report may also facilitate regulatory bodies in developing safety standards and regulations.
 
-Encouraging exploration of other sections:
-
-Data sources:
-The datasets are downloaded from [here](https://github.com/rfordatascience/tidytuesday/tree/master/data/2019/2019-09-10) from GitHub. There are two datasets provided in the repository; one originated from [data.world](https://data.world/amillerbernd/texas-amusement-park-accidents) and another from [Saferparks database](https://ridesdatabase.org/saferparks/data/).
+Firstly, description of data used in the report and how it is prepared for analysis will be discussed. Then, analysis and findings acquired from the data set will be presented and discussed.
 
 # Data Description
+
+The datasets are downloaded from [here](https://github.com/rfordatascience/tidytuesday/tree/master/data/2019/2019-09-10) from GitHub. There are two datasets provided in the repository; one originated from [data.world](https://data.world/amillerbernd/texas-amusement-park-accidents) and another from [Saferparks database](https://ridesdatabase.org/saferparks/data/).
 
 The data.world data set originated from Texas Department of Insurance (TDI) [@dataworld]. It is a record of any injuries caused by an amusement ride from February the 1st 2013 to February the 1st 2017 occurring in the State of Texas (data.world, 2020). An amusement ride is "any mechanical, gravity, or water device or devices that carry or convey passengers along, around, or over a fixed or restricted route or course or within a defined area for the purpose of giving its passengers amusement, pleasure, or excitement" [@tdi]. According to TDI [-@tdi], a quarterly injury report needed to be submitted by amusement ride owners and operators. TDI further stated that this record relates to any injuries that require medical treatment or result in death. 
 
