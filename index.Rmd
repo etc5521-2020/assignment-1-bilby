@@ -72,16 +72,13 @@ vis_dat(safer_parks)
 
 ## Data Limitation
 
-According to Saferparks [-@saferparks], reporting criteria and its level of details, types of equipment included, and years covered vary widely by year, industry sector, jurisdictions, and other factors [@saferparks]. 
+There is limited documentation related to accident reports provided by TDI. It is therefore difficult to determine the limitation related to the data set. In addition to a considerable amount of missing value to some of the variables, data dictionary is not provided by TDI. As a result, it is difficult to be certain about what some of the variables represent. Lastly, there is some inconsistency of format in *injury_date* variable.
 
-While the data set can be used to uncover insights of how patrons are hurt in amusement rides, Saferparks do not recommend the data set to be used for comparison across states, parks, rides or years [@saferparks].
+According to Saferparks [-@saferparks], reporting criteria and its level of details, types of equipment included, and years covered vary widely by year, industry sector, jurisdictions, and other factors. Saferparks further stated that States that is transparent, vigilantly monitor safety incidents, and implement data management system that is efficient will log higher number of accidents. As a result, this is and indications of being more attentive to safety, not less [@saferparks]. 
 
-Despite the missing value issue, the Saferparks data set has two major limitations [@saferpark]:
+While the data set can be used to uncover insights of how patrons are hurt in amusement rides, Saferparks do not recommend the data set to be used for comparison across states, parks, rides or years [@saferparks]. One of the reasons for this is that State laws in relation to amusement ride related injury reporting vary widely. For instance, it is mandatory to report go-kart accidents in Flordia but not in California.
 
-* The data varies widely in content and consistency, because only half of U.S states have provided accident data
-* States with stronger government oversight tend to log more accidents.
-
-After all, the data set still provides some insights about amusement park injury, although it could not be used for predicting nation-wide patterns.
+Due to these limitations, the report will not use the Saferparks data set to analyze nation-wide patterns. Hence, this report will largely focus on amusement park accidents that occur in Texas, United States of America.
 
 
 ## Data Cleaning and Transformation
