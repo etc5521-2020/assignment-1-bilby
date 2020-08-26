@@ -25,6 +25,8 @@ library(knitr)
 library(kableExtra)
 library(tidytext)
 library(wordcloud)
+library(here)
+library(janitor)
 ```
 
 ```{r rawData, include = FALSE}
@@ -32,6 +34,10 @@ tx_injuries <- read_csv("https://raw.githubusercontent.com/rfordatascience/tidyt
 
 
 safer_parks <- read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-09-10/saferparks.csv")
+
+tx_policies <- read.csv(here::here("data/tx_policies.csv")) %>% 
+  janitor::clean_names() %>% 
+  select(-name_of_operation)
 ```
 
 # Introduction and Motivation
@@ -90,6 +96,13 @@ tx_injuries %>%
   select(-other, -serial_no, -injury_report_rec) %>% 
   mutate(age = as.numeric(age),
          injury_date = as.Date(injury_date, format = "%m/%d/%Y")) # convert to date?
+```
+
+```{r tx-complete}
+#joining tx_injuries tibble with tx_policies tibble
+tx_comp <- tx_injuries %>% 
+  left_join(tx_policies,
+            by = c("injury_report_rec" = "i_record"))
 ```
 
 # Analysis and findings
@@ -227,6 +240,15 @@ safer_parks %>%
 Fig \@ref(fig:sq1-wordcloud) shows the frequent words in injury description. Ignoring the words "injury" and "pain", we can see that head, neck knee, ankle, shoulder frequently appear.
 
 In summary, amusement parks should pay extra attention on roller coaster because unlike other subjects roller coaster's failure can cause severe consequence. First, they should regularly maintain the roller coaster, in order to reduce mechanical failure. Second, train the staff and ask them to check to-do list every time launch the equipments. Third, ask visitors to follow the safety requirements. Furthermore, visitors should also protect their head, neck and shoulder. Those body parts are vulnerable and important and they are always injuried in amusement park injury cases.
+
+## Impacts of Insurance Company on Accidents
+
+According to TDI [-@tdi_req], every amusement ride in Texas is required to display a compliance sticker. To get these stickers, rides must be insured and inspected [@tdi_req]. TDI, however, are not involved with rides inspections. Instead, it is the ride owner's insurance company that are responsible to perform these inspections. This section will explore whether there are correlation between insurance company and number of accidents.
+
+```{r accidents-by-insurance}
+tx_comp %>% group_by(agent) %>% 
+  tally()
+```
 
 # Acknowledgments
 The following packages are used to produce this report:
