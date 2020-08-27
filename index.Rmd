@@ -27,6 +27,7 @@ library(tidytext)
 library(wordcloud)
 library(here)
 library(janitor)
+library(plotly)
 ```
 
 ```{r rawData, include = FALSE}
@@ -97,6 +98,12 @@ tx_injuries <- tx_injuries %>%
     nchar(injury_date) == 5 ~ as.Date(as.numeric(injury_date), origin = "1899-12-30"),
     TRUE ~ mdy(injury_date)
   ))
+
+#adding year, month, day variables to tx_injuries
+tx_injuries <- tx_injuries %>% 
+  mutate(injury_year = year(injury_date),
+         injury_month = month(injury_date),
+         injury_day = day(injury_date))
 
 tx_policies <- tx_policies %>%
   janitor::clean_names() %>% 
@@ -255,13 +262,54 @@ safer_parks %>%
 
 Fig \@ref(fig:sq1-wordcloud) shows the frequent words in injury description. Ignoring the words "injury" and "pain", we can see that head, neck knee, ankle, shoulder frequently appear.
 
-In summary, amusement parks should pay extra attention on roller coaster because unlike other subjects roller coaster's failure can cause severe consequence. First, they should regularly maintain the roller coaster, in order to reduce mechanical failure. Second, train the staff and ask them to check to-do list every time launch the equipments. Third, ask visitors to follow the safety requirements. Furthermore, visitors should also protect their head, neck and shoulder. Those body parts are vulnerable and important and they are always injuried in amusement park injury cases.
+In summary, amusement parks should pay extra attention on roller coaster because unlike other subjects roller coaster's failure can cause severe consequence. First, they should regularly maintain the roller coaster, in order to reduce mechanical failure. Second, train the staff and ask them to check to-do list every time launch the equipments. Third, ask visitors to follow the safety requirements. Furthermore, visitors should also protect their head, neck and shoulder. Those body parts are vulnerable and important and they are always injured in amusement park injury cases.
 
-## Impacts of Insurance Company on Accidents
+## Insurance Company and Accidents
 
-According to TDI [-@tdi_req], every amusement ride in Texas is required to display a compliance sticker. To get these stickers, rides must be insured and inspected [@tdi_req]. TDI, however, are not involved with rides inspections. Instead, it is the ride owner's insurance company that are responsible to perform these inspections. This section will explore whether there are correlation between insurance company and number of accidents.
+According to TDI [-@tdi_req], every amusement ride in Texas is required to display a compliance sticker. To get these stickers, rides must be insured and inspected [@tdi_req]. TDI, however, are not involved with rides inspections. Instead, it is the ride owner's insurance company that are responsible to perform these inspections. This section will explore whether number of injuries vary across insurance agents responsible in inspecting the quality of rides.
+
+Firstly, the TDI injury report/data set needs to be combined with insurance policies data set, which is also provided by TDI. Then, a summary table table of accidents occured by insurance agents can be constructed.
 
 ```{r accidents-by-insurance}
+tx_comp_summary <- tx_comp %>% group_by(agent) %>%
+  filter(agent != "NA") %>% 
+  tally()
+
+tx_comp_summary %>% 
+  arrange(desc(n)) %>% 
+  head(5) %>% 
+  kable(caption = "Top 5 Accidents by Insurance Agents", 
+        col.names = c("Insurance Agents", "Total Injuries")) %>% 
+  kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
+Table \@ref(tab:accidents-by-insurance) shows that the majority of rides related injuries occurred in amusement parks that were overseen by Hartford Fire Insurance Company. It is still larger compared to the number of injuries from the rest of the table combined.
+
+```{r accidents-by-insurance-yearly, fig.width=10, fig.cap= "Yearly Trend of Number of Rides Related Injuries in Texas"}
+tx_comp_summary <- tx_comp %>% group_by(agent, injury_year) %>%
+  filter(agent != "NA") %>% 
+  tally()
+
+accidents_insurance_fig <- tx_comp_summary %>% 
+  ggplot(aes(x = injury_year,
+             y = n,
+             colour = agent)) +
+  geom_line() +
+  geom_point() +
+  labs(colour = "Insurance Agents") +
+  theme_minimal() +
+  xlab("Year") +
+  ylab("Total Injury")
+
+ggplotly(accidents_insurance_fig)
+```
+
+It will also be useful to see the trends of these injuries over the year. Figure \@ref(fig:accidents-by-insurance-yearly) shows that while the trends of total injuries fluctuate across the year, they had a downward trajectory in general. Hartford Fire Insurance Company, in particular, shows a constant and significant reduction in total ride related injuries across the year. In contrast, Everest Indemnity Insurance Company underwent a reverse trend where its number of ride related injuries rose every year.
+
+It is important to note that having a high number of injuries is not necessarily a reflection of an insurance company being negligence. It may be the case that the parks overseen by the insurance company attracts much more guests compared to other parks. However, given the government is not responsible in overseeing the condition of the rides, it is important to see how the number of injuries distributed to each insurance agents. Further analysis may be warranted to uncover the drivers behind the variability of the number of injuries across insurance agents, as well as its trends across the year. For instance, it may be beneficial to investigate why the rides related injuries constantly decreases every year for Hartford Fire Insurance Company. Insights gained from this investigation have the potential to help the industry as well as the general public as it may minimize rides related accidents. Unfortunately, this is out of scope for this paper due to limitation of data availability.
+
+
+```{r accidents-by-insurance-2}
 tx_policies_smry <- tx_policies %>% 
   group_by(agent) %>% 
   tally() %>% 
@@ -269,7 +317,8 @@ tx_policies_smry <- tx_policies %>%
   rename(insurance_agent = agent,
          num_operations_maintained = n)
 
-tx_comp %>% group_by(agent) %>%
+tx_comp_summary2 <- tx_comp %>% 
+  group_by(agent) %>%
   filter(agent != "NA") %>% 
   tally() %>% 
   arrange(desc(n)) %>% 
