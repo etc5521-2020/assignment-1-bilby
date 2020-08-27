@@ -132,7 +132,7 @@ tx_comp <- tx_injuries %>%
 
 ## Primary question: what are the high-risk groups?
 
-The primary question in this report is to find out the high-risk group. Consequently, draw parks attention to pay more attention on these groups for their safety. We mainly analyse the age and gender for the primary quesiton. The Saferparks dataset cannot be used here, because the dataset record injury records instead of individuals; that is, we do not know the ages of each injuried. 
+The primary question in this report is to find out the high-risk group. Consequently, help parks to target these groups and also remind the groups taking care of their own. We mainly analyse the age and gender for the primary quesiton. The Saferparks dataset cannot be used here, because the dataset does not have detail individual records; therefore, we do not know the ages of each injuried. 
 
 First, we need to clean the data. The missing values in age and gender is removed and the variable type is converted from character to numeric. Second, we unify the records in gender because some observations record gender male as 'M' while others record as 'm'. Third, calculate the percentage of each age group.
 
@@ -148,18 +148,9 @@ tx_gender_age <- tx_injuries %>%
   mutate(age = as.numeric(age)) %>% 
     # remove missing values in age
   filter(!is.na(age))
-
-  
    
 
 tx_ob <- nrow(tx_gender_age)
-  
-# tx_gender_age %>% 
-#   count(age, sort = FALSE) %>% 
-#   mutate(percentage = n*100/tx_ob) %>% 
-#   ggplot(aes(x = age, y = percentage)) + 
-#   geom_line() +
-#   geom_hline(yintercept = 1, color = 'red') # This line plot is removed.
 
 tx_gender_age%>% 
   group_by(gender, age) %>% 
@@ -174,9 +165,6 @@ tx_gender_age%>%
   # scale_fill_brewer(palette="Paired")+
   theme_minimal()
 ```
-
-Fig \@ref(fig:tx-pm1) illustrates the distribution of injuried ages and gender. Surprisingly, the most injuried were babies. (more...)
-
 
 ```{r tx-pm1-tab}
 tx_gender_age %>% 
@@ -230,7 +218,7 @@ tx_kid_m <- tx_kid - tx_kid_fe
 
 Table \@ref(tab:tx-pm1-tab) shows the ranking of injuried ages. Injuried babies occupies nearly 10% of the dataset. In the dataset `r round(tx_kid, 2)` percent injuried are under 18, except babies. We distinguish babies from other age groups because babies are carried by their parents and babies are not able to move to any places by their own. 
 
-If we take gender into account, we can see gender distributions by age. Table \@ref(tab:tx-pm1-gender) shows the top-10 rankings by gender and age. In top-10 list, it seems that more girls get injuried than boys in amusement parks in Texas. However, if we look at the whole dataset, age between  1 and 16, `r round(tx_kid_fe, 2)` percent are girls while `r round(tx_kid_m, 2)` are boys.
+If we take gender into account, we can see gender distributions by age. Table \@ref(tab:tx-pm1-gender) shows the top-10 rankings by gender and age. In top-10 list, it seems that more girls get injuried than boys in amusement parks in Texas. However, if we look at the whole dataset, age 18, `r round(tx_kid_fe, 2)` percent are girls while `r round(tx_kid_m, 2)` are boys.
 
 In summary, parents really need to pay more attention on their babies in amusement parks. And any children (under 18) need to draw the parks staff's attention. 
 
@@ -251,18 +239,24 @@ safer_parks %>%
 
 ```{r sq1-wordcloud, fig.cap = "Injury description --- word cloud", out.height= '100%', out.width= '100%'}
 data(stop_words)
+pain <- tribble( # create a new list for removing common words in the injury description
+  ~word, ~lexicon,
+  "pain", "SMART",
+  "injury", "SMART",
+  "injuries", "SMART")
 safer_parks %>% 
   select(injury_desc) %>% 
   unnest_tokens(word, injury_desc) %>% 
   anti_join(stop_words) %>% 
+  anti_join(pain) %>% 
   count(word) %>% 
   with(wordcloud(word, n ,max.words = 80))
 
 ```
 
-Fig \@ref(fig:sq1-wordcloud) shows the frequent words in injury description. Ignoring the words "injury" and "pain", we can see that head, neck knee, ankle, shoulder frequently appear.
+First, We create a new list containing common workds, such as *injury*, *injuries* and *pain*. Second, we remove unimportant words from injury description. Finally, the word cloud is created. We can see that within the word cloud (Fig \@ref(fig:sq1-wordcloud)) bigger the word more often it appears. Head may be the most frequent word; so, we may assume that most people get hurt on their heads.
 
-In summary, amusement parks should pay extra attention on roller coaster because unlike other subjects roller coaster's failure can cause severe consequence. First, they should regularly maintain the roller coaster, in order to reduce mechanical failure. Second, train the staff and ask them to check to-do list every time launch the equipments. Third, ask visitors to follow the safety requirements. Furthermore, visitors should also protect their head, neck and shoulder. Those body parts are vulnerable and important and they are always injured in amusement park injury cases.
+In summary, amusement parks should pay extra attention on roller coaster because unlike other subjects, roller coaster's failure can cause severe consequence --- no one can escape once a roller coaster is launched. First, they should regularly maintain the roller coaster, in order to reduce mechanical failure. Second, train the staff and ask them to check to-do list every time launch the equipments. Third, ask visitors to follow the safety guide. Furthermore, visitors should also protect their head, neck and shoulder. Those body parts are vulnerable and important and they are always injuried in amusement park injury cases.
 
 ## Insurance Company and Accidents
 
