@@ -88,7 +88,20 @@ Due to these limitations, the report will not use the Saferparks data set to ana
 
 ## Data Cleaning and Transformation
 
-*possibly need to convert some variables to factors*
+A considerable amount of data wangling needed to be done to the TDI injury data set prior to the analysis. Firstly, there are inconsistencies of format in the date variable where some of the observations were stored in a serial number format that only Excel recognize (e.g. 39448). Dates with this format needed to be converted to "YYYY-MM-DD" format.
+
+Secondly, the following variables were added to the TDI injury data set:
+
+* injury_year: the year when the observed injury occurred
+* injury_month: the month when the observed injury occurred
+* injury_day: the day when the observed injury occurred
+* season: the season (U.S.) when the observed injury occurred
+
+TDI data set about current insurance policies were also needed to be cleaned. Firstly, the janitor package was used to make the column names tidy. Next, the agent variable were needed to be cleaned as there were many observations that were misspelled.
+
+Finally, the TDI injury data set were combined with TDI insurance policies data set.
+
+Much of the data wrangling and transformation process were done by utilizing the dplyr and lubridate packages.
 
 ```{r clean}
 #cleaning the injury_date variable
@@ -275,7 +288,11 @@ First, We create a new list containing common workds, such as *injury*, *injurie
 
 In summary, amusement parks should pay extra attention on roller coaster because unlike other subjects, roller coaster's failure can cause severe consequence --- no one can escape once a roller coaster is launched. First, they should regularly maintain the roller coaster, in order to reduce mechanical failure. Second, train the staff and ask them to check to-do list every time launch the equipments. Third, ask visitors to follow the safety guide. Furthermore, visitors should also protect their head, neck and shoulder. Those body parts are vulnerable and important and they are always injuried in amusement park injury cases.
 
-## Accidents and Seasonal Trends
+## Injuries and Seasonal Trends
+
+**Does amusement ride injuries have seasonal characteristics?**
+
+This section will examine whether seasonal trends affected number of amusement ride injuries across the year. Table \@ref(tab:seasonal-trends-table) shows that rides related injuries have seasonal trends and they are consistent across the year. The number of injuries occurred in autumn and winter seasons were relatively low. The number of injuries started to rise in spring, and reached its peak in summer.
 
 ```{r seasonal-trends-table}
 tx_season_table <- tx_injuries %>% 
@@ -291,9 +308,10 @@ tx_season_table %>%
   kable_styling(bootstrap_options = c("striped", "hover"))
 ```
 
-**Does amusement ride injuries have seasonal characteristics?**
+Figure \@ref(fig:seasonal-trends-plot) shows how the number of injuries occurred in amusement rides distributed across months and years. It is reflected in the graph that the highest number of injuries that occurred in a single month appeared in June 2015 with 41 injuries. Another interesting feature that appears in the graph is that the numbers of rides related injuries in 2014 and 2017 are relatively low compared to other years.
 
-This section will examine whether seasonal trends affected number of amusement ride injuries across the year. Table \@ref(tab:seasonal-trends-table) shows that rides related injuries have seasonal trends and they are consistent across the year. The number of injuries occurred in autumn and winter seasons were relatively low. The number of injuries started to rise in spring, and reached its peak in summer.
+It may be beneficial for ride owners to focus their resources in spring and summer when number of injuries are at its height. More regular and rigorous inspections to the ride equipment can be performed during these periods. Furthermore, ride owners may also provide staff with additional training in the periods leading up to summer. It may also be advantageous to perform further study to uncover the true drivers behind 2014's and 2017's low number of injuries.
+
 
 ```{r seasonal-trends-plot, fig.cap="Ride Related Injuries Seasonal Trends"}
 tx_month <- tx_injuries %>% 
@@ -320,15 +338,11 @@ tx_season_plot <- tx_month %>%
 ggplotly(tx_season_plot)
 ```
 
-Figure \@ref(fig:seasonal-trends-plot) shows how the number of injuries occurred in amusement rides distributed across months and years. It is reflected in the graph that the highest number of injuries that occurred in a single month appeared in June 2015 with 41 injuries. Another interesting feature that appears in the graph is that the numbers of rides related injuries in 2014 and 2017 are relatively low compared to other years.
-
-It may be beneficial for ride owners to focus their resources in spring and summer when number of injuries are at its height. More regular and rigorous inspections to the ride equipment can be performed during these periods. Furthermore, ride owners may also provide staff with additional training in the periods leading up to summer. It may also be advantageous to perform further study to uncover the true drivers behind 2014's and 2017's low number of injuries.
-
-## Accidents and Insurance Company
+## Injuries and Insurance Company
 
 **Are numbers of amusement rides injuries affected by insurance company?**
 
-According to TDI [-@tdi_req], every amusement ride in Texas is required to display a compliance sticker. To get these stickers, rides must be insured and inspected [@tdi_req]. TDI, however, are not involved with rides inspections. Instead, it is the ride owner's insurance company that are responsible to perform these inspections. This section will explore whether number of injuries vary across insurance agents responsible in inspecting the quality of rides.
+According to TDI [-@tdi_req], every amusement ride in Texas is required to display a compliance sticker. To get these stickers, rides must be insured and inspected [@tdi_req]. TDI, however, are not involved with rides inspections. Instead, it is the ride owner's insurance company that are responsible to perform these inspections. This section will explore whether number of injuries vary across insurance agents responsible in inspecting the quality of rides. A summary table of accidents occurred by insurance agents were constructed by using the combined table of TDI injuries and insurance policies data set. Table \@ref(tab:accidents-by-insurance) shows that the majority of rides related injuries occurred in amusement parks that were overseen by Hartford Fire Insurance Company. It is still larger compared to the number of injuries from the rest of the table combined.
 
 ```{r accidents-by-insurance}
 tx_comp_summary <- tx_comp %>% group_by(agent) %>%
@@ -343,7 +357,9 @@ tx_comp_summary %>%
   kable_styling(bootstrap_options = c("striped", "hover"))
 ```
 
-Firstly, the TDI injury report/data set needs to be combined with insurance policies data set, which is also provided by TDI. Then, a summary table table of accidents occured by insurance agents can be constructed. Table \@ref(tab:accidents-by-insurance) shows that the majority of rides related injuries occurred in amusement parks that were overseen by Hartford Fire Insurance Company. It is still larger compared to the number of injuries from the rest of the table combined.
+It will also be useful to see the trends of these injuries over the year. Figure \@ref(fig:accidents-by-insurance-yearly) shows that while the trends of total injuries fluctuate across the year, they had a downward trajectory in general. Hartford Fire Insurance Company, in particular, shows a constant and significant reduction in total ride related injuries across the year. In contrast, Everest Indemnity Insurance Company underwent a reverse trend where its number of ride related injuries rose every year.
+
+It is important to note that having a high number of injuries is not necessarily a reflection of an insurance company being negligence. It may be the case that the parks overseen by the insurance company attracts much more guests compared to other parks. However, given the government is not responsible in overseeing the condition of the rides, it is important to see how the number of injuries distributed to each insurance agents. Further analysis may be warranted to uncover the drivers behind the variability of the number of injuries across insurance agents, as well as its trends across the year. For instance, it may be beneficial to investigate why the rides related injuries constantly decreases every year for Hartford Fire Insurance Company. Insights gained from this investigation have the potential to help the industry as well as the general public as it may minimize rides related accidents. Unfortunately, this is out of scope for this paper due to limitation of data availability.
 
 ```{r accidents-by-insurance-yearly, fig.width=10, fig.cap= "Yearly Trend of Number of Rides Related Injuries in Texas"}
 tx_comp_summary <- tx_comp %>% group_by(agent, injury_year) %>%
@@ -364,14 +380,9 @@ accidents_insurance_fig <- tx_comp_summary %>%
 ggplotly(accidents_insurance_fig)
 ```
 
-It will also be useful to see the trends of these injuries over the year. Figure \@ref(fig:accidents-by-insurance-yearly) shows that while the trends of total injuries fluctuate across the year, they had a downward trajectory in general. Hartford Fire Insurance Company, in particular, shows a constant and significant reduction in total ride related injuries across the year. In contrast, Everest Indemnity Insurance Company underwent a reverse trend where its number of ride related injuries rose every year.
-
-It is important to note that having a high number of injuries is not necessarily a reflection of an insurance company being negligence. It may be the case that the parks overseen by the insurance company attracts much more guests compared to other parks. However, given the government is not responsible in overseeing the condition of the rides, it is important to see how the number of injuries distributed to each insurance agents. Further analysis may be warranted to uncover the drivers behind the variability of the number of injuries across insurance agents, as well as its trends across the year. For instance, it may be beneficial to investigate why the rides related injuries constantly decreases every year for Hartford Fire Insurance Company. Insights gained from this investigation have the potential to help the industry as well as the general public as it may minimize rides related accidents. Unfortunately, this is out of scope for this paper due to limitation of data availability.
-
-
 # Acknowledgments
 The following packages are used to produce this report:
-visdat [@visdat], dplyr [@dplyr], readr[@readr], tidyverse [@tidyverse], lubridate [@lubridate], knitr [@knitr], kableExtra [@kableExtra], tidytext [@tidytext], wordcloud [@wordcloud]
+visdat [@visdat], dplyr [@dplyr], readr[@readr], tidyverse [@tidyverse], lubridate [@lubridate], knitr [@knitr], kableExtra [@kableExtra], tidytext [@tidytext], wordcloud [@wordcloud], janitor [@janitor], here [@here], plotly [@plotly]
 
 
 # References
