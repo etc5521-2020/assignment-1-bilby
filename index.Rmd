@@ -103,7 +103,22 @@ tx_injuries <- tx_injuries %>%
 tx_injuries <- tx_injuries %>% 
   mutate(injury_year = year(injury_date),
          injury_month = month(injury_date, label = TRUE, abbr = TRUE),
-         injury_day = day(injury_date))
+         injury_day = day(injury_date)) %>% 
+  mutate(season = case_when(
+    injury_month == "Jan" ~ "Winter",
+    injury_month == "Feb" ~ "Winter",
+    injury_month == "Mar" ~ "Spring",
+    injury_month == "Apr" ~ "Spring",
+    injury_month == "May" ~ "Spring",
+    injury_month == "Jun" ~ "Summer",
+    injury_month == "Jul" ~ "Summer",
+    injury_month == "Aug" ~ "Summer",
+    injury_month == "Sep" ~ "Autumn",
+    injury_month == "Oct" ~ "Autumn",
+    injury_month == "Nov" ~ "Autumn",
+    injury_month == "Dec" ~ "Winter",
+    TRUE ~ "NA"
+  ))
 
 tx_policies <- tx_policies %>%
   janitor::clean_names() %>% 
@@ -262,21 +277,38 @@ safer_parks %>%
 
 Fig \@ref(fig:sq1-wordcloud) shows the frequent words in injury description. Ignoring the words "injury" and "pain", we can see that head, neck knee, ankle, shoulder frequently appear.
 
-In summary, amusement parks should pay extra attention on roller coaster because unlike other subjects roller coaster's failure can cause severe consequence. First, they should regularly maintain the roller coaster, in order to reduce mechanical failure. Second, train the staff and ask them to check to-do list every time launch the equipments. Third, ask visitors to follow the safety requirements. Furthermore, visitors should also protect their head, neck and shoulder. Those body parts are vulnerable and important and they are always injured in amusement park injury cases.
+In summary, amusement parks should pay extra attention on roller coaster because unlike other subjects roller coaster's failure can cause severe consequence. First, they should regularly maintain the roller coaster, in order to reduce mechanical failure. Second, train the staff and ask them to check to-do list every time launch the equipment. Third, ask visitors to follow the safety requirements. Furthermore, visitors should also protect their head, neck and shoulder. Those body parts are vulnerable and important and they are always injured in amusement park injury cases.
 
 ## Accidents and Seasonal Trends
 
-```{r accidents-seasonal-trends}
-tx_season <- tx_injuries %>% 
+```{r seasonal-trends-table}
+tx_season_table <- tx_injuries %>% 
+  filter(season != "NA") %>% 
+  group_by(injury_year, season) %>% 
+  tally() %>% 
+  pivot_wider(names_from = injury_year,
+              values_from =n)
+
+tx_season_table %>% 
+  kable(caption = "Amusement Rides Related Injuries across Years and Seasons", 
+        col.names = c("Season", "2013", "2014", "2015", "2016", "2017")) %>% 
+  kable_styling(bootstrap_options = c("striped", "hover"))
+```
+**Does amusement ride injuries have seasonal characteristics?**
+
+This section will examine whether seasonal trends affected number of amusement ride injuries across the year. Table \@ref(tab:seasonal-trends-table) shows that rides related injuries have seasonal trends and they are consistent across the year. The number of injuries occurred in autumn and winter seasons were relatively low. The number of injuries started to rise in spring, and reached its peak in summer.
+
+```{r seasonal-trends-plot, fig.cap="Ride Related Injuries Seasonal Trends"}
+tx_month <- tx_injuries %>% 
   filter(injury_year != "NA") %>% 
   filter(injury_month != "NA") %>% 
   group_by(injury_year, injury_month) %>% 
   tally()
 
-tx_season$injury_year <- as.factor(tx_season$injury_year)
-tx_season$injury_month <- as.factor(tx_season$injury_month)
+tx_month$injury_year <- as.factor(tx_month$injury_year)
+tx_month$injury_month <- as.factor(tx_month$injury_month)
 
-tx_season_plot <- tx_season %>% 
+tx_season_plot <- tx_month %>% 
   ggplot(aes(x = injury_month,
              y = n,
              group = injury_year)) +
@@ -291,7 +323,13 @@ tx_season_plot <- tx_season %>%
 ggplotly(tx_season_plot)
 ```
 
+Figure \@ref(fig:seasonal-trends-plot) shows how the number of injuries occurred in amusement rides distributed across months and years. It is reflected in the graph that the highest number of injuries that occurred in a single month appeared in June 2015 with 41 injuries. Another interesting feature that appears in the graph is that the numbers of rides related injuries in 2014 and 2017 are relatively low compared to other years.
+
+It may be beneficial for ride owners to focus their resources in spring and summer when number of injuries are at its height. More regular and rigorous inspections to the ride equipment can be performed during these periods. Furthermore, ride owners may also provide staff with additional training in the periods leading up to summer. It may also be advantageous to perform further study to uncover the true drivers behind 2014's and 2017's low number of injuries.
+
 ## Accidents and Insurance Company
+
+**Are numbers of amusement rides injuries affected by insurance company?**
 
 According to TDI [-@tdi_req], every amusement ride in Texas is required to display a compliance sticker. To get these stickers, rides must be insured and inspected [@tdi_req]. TDI, however, are not involved with rides inspections. Instead, it is the ride owner's insurance company that are responsible to perform these inspections. This section will explore whether number of injuries vary across insurance agents responsible in inspecting the quality of rides.
 
