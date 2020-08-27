@@ -152,7 +152,7 @@ tx_gender_age <- tx_injuries %>%
 
 tx_ob <- nrow(tx_gender_age)
 
-tx_gender_age%>% 
+p1 <- tx_gender_age%>% 
   group_by(gender, age) %>% 
   count(gender,age) %>% 
   ungroup() %>% 
@@ -164,6 +164,8 @@ tx_gender_age%>%
   #           color="white", size=3.5)+
   # scale_fill_brewer(palette="Paired")+
   theme_minimal()
+
+ggplotly()
 ```
 
 ```{r tx-pm1-tab}
