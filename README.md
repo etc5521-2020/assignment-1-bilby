@@ -1,11 +1,11 @@
 # ETC5521 Assignment 1 
 
-Team name: [FILL]
+Team name: bilby
 
 Team members:
 
-* [FILL]
-* [FILL]
+* Yuheng Cui
+* Jimmy Effendy
 
 # Steps
 
@@ -29,3 +29,10 @@ Team members:
 - [ ] Contributed step 4-5 to the team github repo **due 21st Aug**
 - [ ] Final report available on repo **due 28th Aug**
 - [ ] Peer feedback provided as an issue on your assigned group's repo **due 4th Sep**
+
+# Data sources
+
+The datasets are downloaded from [here](https://github.com/rfordatascience/tidytuesday/tree/master/data/2019/2019-09-10) from GitHub. 
+
+* One originated from [data.world](https://data.world/amillerbernd/texas-amusement-park-accidents) and 
+* another from [Saferparks database](https://ridesdatabase.org/saferparks/data/).
