@@ -57,9 +57,9 @@ Firstly, description of data used in the report and how it is prepared for analy
 
 # Data Description
 
-The datasets are downloaded from [here](https://github.com/rfordatascience/tidytuesday/tree/master/data/2019/2019-09-10) from GitHub. There are two datasets provided in the repository; one originated from [data.world](https://data.world/amillerbernd/texas-amusement-park-accidents) and another from [Saferparks database](https://ridesdatabase.org/saferparks/data/).
+The datasets are downloaded from [here](https://github.com/rfordatascience/tidytuesday/tree/master/data/2019/2019-09-10) from GitHub. There are two datasets provided in the repository; one originated from [data.world](https://data.world/amillerbernd/texas-amusement-park-accidents) and another from [Saferparks database](https://ridesdatabase.org/saferparks/data/). An additional data from Texas Department of Insurance (TDI) about current available insurance policies is used for this report [@tdi_pol].
 
-The data.world data set originated from Texas Department of Insurance (TDI) [@dataworld]. It is a record of any injuries caused by an amusement ride from February the 1st 2013 to February the 1st 2017 occurring in the State of Texas [@dataworld]. An amusement ride is "any mechanical, gravity, or water device or devices that carry or convey passengers along, around, or over a fixed or restricted route or course or within a defined area for the purpose of giving its passengers amusement, pleasure, or excitement" [@tdi]. According to TDI [-@tdi], a quarterly injury report needed to be submitted by amusement ride owners and operators. TDI further stated that this record relates to any injuries that require medical treatment or result in death. 
+The data.world data set originated from TDI [@dataworld]. It is a record of any injuries caused by an amusement ride from February the 1st 2013 to February the 1st 2017 occurring in the State of Texas [@dataworld]. An amusement ride is "any mechanical, gravity, or water device or devices that carry or convey passengers along, around, or over a fixed or restricted route or course or within a defined area for the purpose of giving its passengers amusement, pleasure, or excitement" [@tdi]. According to TDI [-@tdi], a quarterly injury report needed to be submitted by amusement ride owners and operators. TDI further stated that this record relates to any injuries that require medical treatment or result in death. 
 
 This data set has `r nrow(tx_injuries)` number of observations and `r ncol(tx_injuries)` number of variables. Fig \@ref(fig:quality-of-tx) shows the data set has too many missing values in **other** variable and many missing values in **serial_no** variable. Good news is that these two variables has little effects on our analysis, thus, we can remove these two variables. **Age** should be converted to numeric variable and **injury_date** should be date variable.
 
@@ -102,7 +102,7 @@ tx_injuries <- tx_injuries %>%
 #adding year, month, day variables to tx_injuries
 tx_injuries <- tx_injuries %>% 
   mutate(injury_year = year(injury_date),
-         injury_month = month(injury_date),
+         injury_month = month(injury_date, label = TRUE, abbr = TRUE),
          injury_day = day(injury_date))
 
 tx_policies <- tx_policies %>%
@@ -264,11 +264,36 @@ Fig \@ref(fig:sq1-wordcloud) shows the frequent words in injury description. Ign
 
 In summary, amusement parks should pay extra attention on roller coaster because unlike other subjects roller coaster's failure can cause severe consequence. First, they should regularly maintain the roller coaster, in order to reduce mechanical failure. Second, train the staff and ask them to check to-do list every time launch the equipments. Third, ask visitors to follow the safety requirements. Furthermore, visitors should also protect their head, neck and shoulder. Those body parts are vulnerable and important and they are always injured in amusement park injury cases.
 
-## Insurance Company and Accidents
+## Accidents and Seasonal Trends
+
+```{r accidents-seasonal-trends}
+tx_season <- tx_injuries %>% 
+  filter(injury_year != "NA") %>% 
+  filter(injury_month != "NA") %>% 
+  group_by(injury_year, injury_month) %>% 
+  tally()
+
+tx_season$injury_year <- as.factor(tx_season$injury_year)
+tx_season$injury_month <- as.factor(tx_season$injury_month)
+
+tx_season_plot <- tx_season %>% 
+  ggplot(aes(x = injury_month,
+             y = n,
+             group = injury_year)) +
+  geom_line(aes(color = injury_year)) +
+  geom_point(aes(color = injury_year)) +
+  labs(colour = "Year") +
+  theme_minimal() +
+  xlab("Month") +
+  ylab("Total Injury")
+  
+
+ggplotly(tx_season_plot)
+```
+
+## Accidents and Insurance Company
 
 According to TDI [-@tdi_req], every amusement ride in Texas is required to display a compliance sticker. To get these stickers, rides must be insured and inspected [@tdi_req]. TDI, however, are not involved with rides inspections. Instead, it is the ride owner's insurance company that are responsible to perform these inspections. This section will explore whether number of injuries vary across insurance agents responsible in inspecting the quality of rides.
-
-Firstly, the TDI injury report/data set needs to be combined with insurance policies data set, which is also provided by TDI. Then, a summary table table of accidents occured by insurance agents can be constructed.
 
 ```{r accidents-by-insurance}
 tx_comp_summary <- tx_comp %>% group_by(agent) %>%
@@ -283,7 +308,7 @@ tx_comp_summary %>%
   kable_styling(bootstrap_options = c("striped", "hover"))
 ```
 
-Table \@ref(tab:accidents-by-insurance) shows that the majority of rides related injuries occurred in amusement parks that were overseen by Hartford Fire Insurance Company. It is still larger compared to the number of injuries from the rest of the table combined.
+Firstly, the TDI injury report/data set needs to be combined with insurance policies data set, which is also provided by TDI. Then, a summary table table of accidents occured by insurance agents can be constructed. Table \@ref(tab:accidents-by-insurance) shows that the majority of rides related injuries occurred in amusement parks that were overseen by Hartford Fire Insurance Company. It is still larger compared to the number of injuries from the rest of the table combined.
 
 ```{r accidents-by-insurance-yearly, fig.width=10, fig.cap= "Yearly Trend of Number of Rides Related Injuries in Texas"}
 tx_comp_summary <- tx_comp %>% group_by(agent, injury_year) %>%
@@ -308,80 +333,6 @@ It will also be useful to see the trends of these injuries over the year. Figure
 
 It is important to note that having a high number of injuries is not necessarily a reflection of an insurance company being negligence. It may be the case that the parks overseen by the insurance company attracts much more guests compared to other parks. However, given the government is not responsible in overseeing the condition of the rides, it is important to see how the number of injuries distributed to each insurance agents. Further analysis may be warranted to uncover the drivers behind the variability of the number of injuries across insurance agents, as well as its trends across the year. For instance, it may be beneficial to investigate why the rides related injuries constantly decreases every year for Hartford Fire Insurance Company. Insights gained from this investigation have the potential to help the industry as well as the general public as it may minimize rides related accidents. Unfortunately, this is out of scope for this paper due to limitation of data availability.
 
-
-```{r accidents-by-insurance-2}
-tx_policies_smry <- tx_policies %>% 
-  group_by(agent) %>% 
-  tally() %>% 
-  arrange(desc(n)) %>% 
-  rename(insurance_agent = agent,
-         num_operations_maintained = n)
-
-tx_comp_summary2 <- tx_comp %>% 
-  group_by(agent) %>%
-  filter(agent != "NA") %>% 
-  tally() %>% 
-  arrange(desc(n)) %>% 
-  left_join(tx_policies_smry,
-            by = c("agent" = "insurance_agent")) %>% 
-  rename(total_accidents = n,
-         insurance_agent = agent) %>% 
-  mutate(accidents_per_operation = round(total_accidents/num_operations_maintained, digits = 2))
-```
-
-```{r test, include=FALSE}
-tx_comp %>% group_by(agent) %>%
-  filter(agent != "NA") %>% 
-  tally() %>% 
-  arrange(desc(n)) %>% 
-  ggplot(aes(x = n,
-             y = reorder(agent, n))) +
-  geom_col()
-
-tx_comp %>% group_by(name_of_operation) %>%
-  filter(name_of_operation != "NA") %>% 
-  tally() %>% 
-  arrange(desc(n)) %>% 
-  head(10) %>% 
-  kable() %>% 
-  kable_styling()
-
-tx_comp %>% 
-  filter(name_of_operation != "NA") %>% 
-  filter(agent != "NA") %>% 
-  group_by(name_of_operation, agent) %>% 
-  tally() %>% 
-  arrange(desc(n)) %>%
-  head(10) %>% 
-  kable() %>% 
-  kable_styling()
-
-
-
-tx_policies %>% 
-   group_by(agent, name_of_operation) %>% 
-   tally() %>% 
-   arrange(desc(n)) %>% 
-   kable() %>% 
-   kable_styling()
-
-```
-
-```{r bus-type}
-safer_parks %>% filter(source == "Texas Dept. of Insurance") %>% 
-  group_by(bus_type) %>% 
-  summarise(total_injured = sum(num_injured)) %>% 
-  arrange(desc(total_injured)) %>% 
-  kable() %>% 
-  kable_styling()
-
-safer_parks %>% filter(source == "Texas Dept. of Insurance") %>% 
-  group_by(category) %>% 
-  summarise(total_injured = sum(num_injured)) %>% 
-  arrange(desc(total_injured)) %>% 
-  kable() %>% 
-  kable_styling()
-```
 
 # Acknowledgments
 The following packages are used to produce this report:
