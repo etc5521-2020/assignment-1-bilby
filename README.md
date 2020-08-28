@@ -36,3 +36,8 @@ The datasets are downloaded from [here](https://github.com/rfordatascience/tidyt
 
 * One originated from [data.world](https://data.world/amillerbernd/texas-amusement-park-accidents) and 
 * another from [Saferparks database](https://ridesdatabase.org/saferparks/data/).
+
+# Some abbreviations
+
+* TDI: Texas Department of Insurance
+* IAAPA: International Association of Amusement Parks and Attractions
