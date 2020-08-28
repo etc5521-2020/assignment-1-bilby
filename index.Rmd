@@ -43,15 +43,13 @@ tx_policies <- read.csv(here::here("data/tx_policies.csv"))
 
 Families and friends tend to spend their holidays and weekends in amusement parks. The popularity of amusement park has been growing in popularity in recent years, with worldwide attendance at the top 10 amusement park groups reached half a billion mark for the first time last year [@schneider_2019], with 4% year-on-year growth [@tea2019].
 
-With this ever increasing popularity, it is therefore not unreasonable to consider that the safety of amusement rides is a subject to substantial public interests [@woodcock2014amusement]. It was estimated that the annual number of ride-related injuries in North America was 1,289 in 2018; which is 26% higher compared to 2017 [@iaapa2018]. International Association of Amusement Parks and Attractions further stated that approximately 11% of those injuries are "serious", meaning they result in urgent admission and hospitalization for more than 24 hours for non-medical observation reasons, or causes fatality.
+With this ever increasing popularity, it is therefore reasonable to consider that the safety of amusement rides is subject to substantial public interests [@woodcock2014amusement]. It was estimated that the annual number of ride-related injuries in North America was 1,289 in 2018; which was 26% higher compared to 2017 [@iaapa2018]. International Association of Amusement Parks and Attractions further stated that approximately 11% of those injuries are "serious", meaning that they result in urgent admission and hospitalization for more than 24 hours for non-medical observation reasons, or causes fatality.
 
-While accidents occurred in amusement parks are arguably not frequent, they generate prominent effects when they happen. International Association of Amusement Parks and Attractions [-@iaapa2017] reported that following a ride malfunction in Australia killing four people, the park and also other venues in Australia suffer considerable declines in attendance. This shows that public confidence, safety, and commercial feasibility are strongly linked [@woodcock2014amusement].
+While accidents that occur in amusement parks are arguably not frequent, they generate prominent effects when they happen. International Association of Amusement Parks and Attractions [-@iaapa2017] reported that following a ride malfunction in Australia killing four people, the park and also other venues in Australia suffered considerable declines in attendance. This shows that public confidence, safety, and commercial feasibility are strongly interconnected [@woodcock2014amusement].
 
-There are 25 amusement parks in Texas already [@wiki]. Indeed, amusement parks are good place for kids and young people, but there are also much news reporting accidents in amusement park, and some news are horrible. These news remind people to take care of themselves when playing. More importantly, amusement parks should reduce the probability of mechanical failure and operation errors.
+Thorough evaluations to injury records related to amusement rides are aligned with public interests and are integral to encourage constant improvement in the industry. This paper aims to find factors that have major influence to amusement ride accidents. Uncovering this insight may encourage amusement park owners to utilize their resources more wisely in favor of those groups or equipment that are at the most risk. In addition, this report may also facilitate regulatory bodies when safety standards and regulations are developed.
 
-Thorough evaluations to injury records related to amusement parks are aligned with public interests and are integral to encourage constant improvement. This paper intends to find factors that have major influence to amusement ride accidents. Uncovering this insight may encourage amusement park owners to utilize their resources more wisely in favor of those groups or equipment that are at the most risk. In addition, this report may also facilitate regulatory bodies in developing safety standards and regulations.
-
-This study intends to find out the patterns within injuried groups. The patterns refer to the high-risk groups, high-risk equipment and seasonal trend of injuries. We believe amusement park must make the effort to reduce the incidents; the effort refers to maintaining equipment, training staff and monitoring visitors. At same time, visitors should also follow the parks regulations and equipment instructions. After all, visitors should be responsible for their own safeties in the first place. Reduce the injuries occur in amusement parks and increase the well beings of society. 
+In addition, this study intends to find out the patterns within injured groups. The patterns refer to the high-risk groups, high-risk equipment and seasonal trend of injuries. We believe amusement park must make the effort to reduce the incidents; the effort refers to maintaining equipment, training staff and monitoring visitors. At same time, visitors should also follow the parks regulations and equipment instructions. After all, visitors should be responsible for their own safeties in the first place. Reduce the injuries occur in amusement parks and increase the well beings of society. 
 
 Firstly, description of data used in the report and how it is prepared for analysis will be discussed. Then, analysis and findings acquired from the data set will be presented and discussed.
 
@@ -77,27 +75,27 @@ vis_dat(safer_parks)
 
 ## Data Limitation
 
-There is limited documentation related to accident reports provided by TDI. It is therefore difficult to determine the limitation related to the data set. In addition to a considerable amount of missing value to some of the variables, data dictionary is not provided by TDI. As a result, it is difficult to be certain about what some of the variables represent. Lastly, there is some inconsistency of format in *injury_date* variable.
+As documentations related to accident reports provided by TDI are limited, it is difficult to determine the limitation related to the data set. In addition to a considerable amount of missing values in some of the variables, data dictionary is not provided by TDI. As a result, a fair amount of guesstimates were required for some of the variables provided. Lastly, there is some inconsistency of format in **injury_date** variable.
 
-According to Saferparks [-@saferpark], reporting criteria and its level of details, types of equipment included, and years covered vary widely by year, industry sector, jurisdictions, and other factors. Saferparks further stated that States that is transparent, vigilantly monitor safety incidents, and implement data management system that is efficient will log higher number of accidents. As a result, this is and indications of being more attentive to safety, not less [@saferpark]. 
+According to Saferparks [-@saferpark], reporting criteria and its level of details, types of equipment included, and years covered vary widely across year, industry sector, jurisdictions, and other factors. Saferparks further stated that States that are transparent, vigilantly monitor safety incidents, and implement data management systems that are efficient will log higher number of accidents. In other words, having high number of injuries may be an indications of being more attentive to safety, not less [@saferpark]. 
 
-While the data set can be used to uncover insights of how patrons are hurt in amusement rides, Saferparks do not recommend the data set to be used for comparison across states, parks, rides or years [@saferpark]. One of the reasons for this is that State laws in relation to amusement ride related injury reporting vary widely. For instance, it is mandatory to report go-kart accidents in Flordia but not in California.
+While the data set can be used to uncover insights of how patrons got hurt in amusement rides, Saferparks do not recommend the data set to be used for comparison across states, parks, rides or years [@saferpark]. One of the reasons for this is that State laws in relation to amusement ride related injury reporting vary widely. For instance, it is mandatory to report go-kart accidents in Flordia but not in California.
 
 Due to these limitations, the report will not use the Saferparks data set to analyze nation-wide patterns. Hence, this report will largely focus on amusement park accidents that occur in Texas, United States of America.
 
 
 ## Data Cleaning and Transformation
 
-A considerable amount of data wangling needed to be done to the TDI injury data set prior to the analysis. Firstly, there are inconsistencies of format in the date variable where some of the observations were stored in a serial number format that only Excel recognize (e.g. 39448). Dates with this format needed to be converted to "YYYY-MM-DD" format.
+A considerable amount of data wangling needed to be done to the TDI injury data sets prior to the analysis. Firstly, there were inconsistencies of format in the date variable where some of the observations were stored in a serial number format that only Excel recognizes (e.g. 39448). Dates with this format needed to be converted to "YYYY-MM-DD" format.
 
 Secondly, the following variables were added to the TDI injury data set:
 
-* injury_year: the year when the observed injury occurred
-* injury_month: the month when the observed injury occurred
-* injury_day: the day when the observed injury occurred
-* season: the season (U.S.) when the observed injury occurred
+* **injury_year**: the year when the observed injury occurred
+* **injury_month**: the month when the observed injury occurred
+* **injury_day**: the day when the observed injury occurred
+* **season**: the season (U.S.) when the observed injury occurred
 
-TDI data set about current insurance policies were also needed to be cleaned. Firstly, the janitor package was used to make the column names tidy. Next, the agent variable were needed to be cleaned as there were many observations that were misspelled.
+TDI data set about current insurance policies were also needed to be cleaned. Firstly, the janitor package was used to make the column names tidy. Next, the agent variable were needed to be wrangled as there were many observations that were misspelled.
 
 Finally, the TDI injury data set were combined with TDI insurance policies data set.
 
@@ -158,7 +156,9 @@ tx_comp <- tx_injuries %>%
 
 # Analysis and findings
 
-## Primary question: what are the high-risk groups?
+## Primary Question 
+
+**What are The high risk groups?**
 
 The primary question in this report is to find out the high-risk group. Consequently, help parks to target these groups and also remind the groups taking care of their own. We mainly analyse the age and gender for the primary quesiton. The Saferparks dataset cannot be used here, because the dataset does not have detail individual records; therefore, we do not know the ages of each injuried. 
 
@@ -191,7 +191,9 @@ p1 <- tx_gender_age%>%
   # geom_text(aes(y=label_ypos, label=percent), vjust=1.6, 
   #           color="white", size=3.5)+
   # scale_fill_brewer(palette="Paired")+
-  theme_minimal()
+  theme_minimal() +
+  xlab("Age") +
+  ylab("Percent")
 
 ggplotly()
 ```
@@ -204,7 +206,8 @@ tx_gender_age %>%
   arrange(-percent) %>% 
   select(-n) %>% 
   head(10) %>% 
-  kable(caption = "Top 10 risky age group in amusement parks in Texas") %>% 
+  kable(caption = "Top 10 risky age group in amusement parks in Texas",
+        col.names = c("Age", "Percent")) %>% 
   kable_styling(bootstrap_options = c("striped", "hover"))
 ```
 
@@ -217,7 +220,8 @@ tx_gender_age%>%
   select(-n) %>% 
   arrange(-percent) %>% 
   head(10) %>% 
-  kable(caption = "Top 10 risky group by gender in amusement parks in Texas") %>% 
+  kable(caption = "Top 10 risky group by gender in amusement parks in Texas",
+        col.names = c("Gender", "Age", "Percent")) %>% 
   kable_styling(bootstrap_options = c("striped", "hover"))
 ```
 
@@ -253,7 +257,9 @@ If we take gender into account, we can see gender distributions by age. Table \@
 In summary, the age range of the injured is broad (from 0 to 71). But the most injured are young people, especially for children (under 18). And the fact that almost 10 percent of the injured are babies indicates that parents must take care of their babies in amusement parks. They should put their babies in first priority.  
 
 
-## Secondary question 1: what is the most dangerous equipment in parks and what is the most body parts injuried?
+## First Secondary Question 
+
+**What is the most dangerous equipment in parks and what is the most body parts injured?**
 
 First secondary question is "what is the most dangerous equipment in parks". We count the total number of injuries by device type. Table \@ref(tab:safer-equip) shows top-10 rankings of high-risk equipment. It is not surprising that roller coaster is the equipment that causes the most injuries. @gutierrez reported that seven cases are related to roller coaster among eight high-profile U.S. amusement park deaths before 2016. 
 
@@ -263,7 +269,8 @@ safer_parks %>%
   summarise(tot_num_injuries = sum(num_injured)) %>% 
   arrange(-tot_num_injuries) %>% 
   head(10) %>% 
-  kable(caption = "Top 10 risky device type") %>% 
+  kable(caption = "Top 10 risky device type",
+        col.names = c("Device Type", "Total Number of Injuries")) %>% 
   kable_styling(bootstrap_options = c("striped", "hover"))
 ```
 
@@ -288,11 +295,11 @@ First, We create a new list containing common workds, such as *injury*, *injurie
 
 In summary, in high proportion of injury cases, the injured get hurt of their upper half of the body.  amusement parks should pay extra attention on roller coaster because unlike other subjects, roller coaster's failure can cause severe consequence --- no one can escape once a roller coaster is launched. First, they should regularly maintain the roller coaster, in order to reduce mechanical failure. Second, train the staff and ask them to check to-do list every time launch the equipments. Third, ask visitors to follow the safety guide. Furthermore, visitors should also protect their head, neck and shoulder. Those body parts are vulnerable and important and they are always injuried in amusement park injury cases.
 
-## Injuries and Seasonal Trends
+## Second Secondary Question
 
 **Does amusement ride injuries have seasonal characteristics?**
 
-This section will examine whether seasonal trends affected number of amusement ride injuries across the year. Table \@ref(tab:seasonal-trends-table) shows that rides related injuries have seasonal trends and they are consistent across the year. The number of injuries occurred in autumn and winter seasons were relatively low. The number of injuries started to rise in spring, and reached its peak in summer.
+This section will examine whether seasonal trends affected number of amusement ride injuries across the year. Table \@ref(tab:seasonal-trends-table) shows that rides related injuries have seasonal trends and they are consistent across the years. The number of injuries occurred in autumn and winter seasons were relatively low. The number started to rise in spring, and reached its peak in summer.
 
 ```{r seasonal-trends-table}
 tx_season_table <- tx_injuries %>% 
@@ -310,7 +317,10 @@ tx_season_table %>%
 
 Figure \@ref(fig:seasonal-trends-plot) shows how the number of injuries occurred in amusement rides distributed across months and years. It is reflected in the graph that the highest number of injuries that occurred in a single month appeared in June 2015 with 41 injuries. Another interesting feature that appears in the graph is that the numbers of rides related injuries in 2014 and 2017 are relatively low compared to other years.
 
-It may be beneficial for ride owners to focus their resources in spring and summer when number of injuries are at its height. More regular and rigorous inspections to the ride equipment can be performed during these periods. Furthermore, ride owners may also provide staff with additional training in the periods leading up to summer. It may also be advantageous to perform further study to uncover the true drivers behind 2014's and 2017's low number of injuries.
+It may be beneficial for ride owners to focus their resources in spring and summer when number of injuries are at its height. More regular and rigorous inspections to the ride equipment can be performed during these periods. Furthermore, ride owners may also provide staff with additional training in the periods leading up to summer. It may also be advantageous to perform further study to uncover the true drivers of the following questions (which unfortunately are out of scope of this report):
+
+* Why did 2014 and 2017 have comparatively low number of injuries?
+* Why did June 2015 have such a high number of injuries?
 
 
 ```{r seasonal-trends-plot, fig.cap="Ride Related Injuries Seasonal Trends"}
@@ -338,11 +348,11 @@ tx_season_plot <- tx_month %>%
 ggplotly(tx_season_plot)
 ```
 
-## Injuries and Insurance Company
+## Third Secondary Question
 
-**Are numbers of amusement rides injuries affected by insurance company?**
+**What are the effects of insurance company to number of rides related injuries?**
 
-According to TDI [-@tdi_req], every amusement ride in Texas is required to display a compliance sticker. To get these stickers, rides must be insured and inspected [@tdi_req]. TDI, however, are not involved with rides inspections. Instead, it is the ride owner's insurance company that are responsible to perform these inspections. This section will explore whether number of injuries vary across insurance agents responsible in inspecting the quality of rides. A summary table of accidents occurred by insurance agents were constructed by using the combined table of TDI injuries and insurance policies data set. Table \@ref(tab:accidents-by-insurance) shows that the majority of rides related injuries occurred in amusement parks that were overseen by Hartford Fire Insurance Company. It is still larger compared to the number of injuries from the rest of the table combined.
+According to TDI [-@tdi_req], every amusement ride in Texas is required to display a compliance sticker. To get these stickers, rides must be insured and inspected [@tdi_req]. TDI, however, are not involved with rides inspections. Instead, it is the ride owner's insurance company that are responsible to perform these inspections. This section will explore whether number of injuries vary across insurance agents responsible in inspecting the quality of rides. A summary table of accidents occurred by insurance agents were constructed by using the combined table of TDI injuries and insurance policies data set. Table \@ref(tab:accidents-by-insurance) shows that the majority of rides related injuries occurred in amusement parks that were overseen by Hartford Fire Insurance Company. The number is still larger compared to the number of injuries from the rest of the table combined.
 
 ```{r accidents-by-insurance}
 tx_comp_summary <- tx_comp %>% group_by(agent) %>%
