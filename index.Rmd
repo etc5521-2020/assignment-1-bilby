@@ -391,7 +391,7 @@ accidents_insurance_fig <- tx_comp_summary %>%
 ggplotly(accidents_insurance_fig)
 ```
 
-# new question 1
+# What are characteristics of body part injured? Is there any improvement in preventing serious injuries? 
 
 # new question 2
 
