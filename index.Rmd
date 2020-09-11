@@ -391,6 +391,10 @@ accidents_insurance_fig <- tx_comp_summary %>%
 ggplotly(accidents_insurance_fig)
 ```
 
+# new question 1
+
+# new question 2
+
 # Acknowledgments
 The following packages are used to produce this report:
 visdat [@visdat], dplyr [@dplyr], readr[@readr], tidyverse [@tidyverse], lubridate [@lubridate], knitr [@knitr], kableExtra [@kableExtra], tidytext [@tidytext], wordcloud [@wordcloud], janitor [@janitor], here [@here], plotly [@plotly]
