@@ -6,6 +6,8 @@ Team members:
 
 * Yuheng Cui
 * Jimmy Effendy
+* Weihao Li
+* Yan Ma
 
 # Steps
 
