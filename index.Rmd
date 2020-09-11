@@ -28,6 +28,7 @@ library(wordcloud)
 library(here)
 library(janitor)
 library(plotly)
+Sys.setlocale("LC_ALL","English")
 ```
 
 ```{r rawData, include = FALSE}
@@ -149,7 +150,7 @@ tx_policies <- tx_policies %>%
 #joining tx_injuries tibble with tx_policies tibble
 tx_comp <- tx_injuries %>% 
   left_join(tx_policies,
-            by = c("injury_report_rec" = "i_record")) %>% 
+            by = c("injury_report_rec" = "record")) %>% 
   select(-name_of_operation.y) %>% 
   rename(name_of_operation = name_of_operation.x)
 ```
