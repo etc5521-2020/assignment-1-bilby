@@ -395,10 +395,30 @@ ggplotly(accidents_insurance_fig)
 
 # State level analysis
 ## The states with the most amusement park injuries
-Analyse the tx_comp data by state, find the states with the most amusement park injuries. And create a heat map of injuries.
+Analyse the safer_parks data by state, find the states with the most amusement park injuries from 1/1/2011 to 9/9/2016.
+
+```{r state-city-injuries}
+safer_parks %>% 
+  group_by(acc_city, acc_state) %>% 
+  summarise(total_injuries = sum(num_injured)) %>% 
+  arrange(desc(total_injuries)) %>% 
+  head(10) %>% 
+  kable(caption = "Cities with the most amusement park injuries", booktabs = T) %>% 
+  column_spec(3, width = "6cm") %>%
+  kable_styling(full_width = FALSE, latex_options = c("striped", "hold_position"))
+```
 
 ## The most dangerous ride in each state
 Find out the most dangerous ride in each state, displaying the number of injuries and the manufacturer name. This could remind people to avoid the most dangerous ride in their state, and we can further analyse which manufacturer's products caused more injuries over the years.
+
+```{r manufacturer}
+safer_parks %>% 
+  group_by(manufacturer, acc_state) %>% 
+  summarise(total_injuries_manu = sum(num_injured)) %>% 
+  arrange(desc(total_injuries_manu))
+```
+
+
 
 # Acknowledgments
 The following packages are used to produce this report:
