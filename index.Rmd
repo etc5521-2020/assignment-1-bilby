@@ -208,8 +208,10 @@ tx_gender_age %>%
   select(-n) %>% 
   head(10) %>% 
   kable(caption = "Top 10 risky age group in amusement parks in Texas",
-        col.names = c("Age", "Percent")) %>% 
-  kable_styling(bootstrap_options = c("striped", "hover"))
+        col.names = c("Age", "Percent"), 
+        digits = 2) %>% 
+  column_spec(2, width = "8cm") %>% 
+  kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE)
 ```
 
 ```{r tx-pm1-gender}
@@ -223,7 +225,8 @@ tx_gender_age%>%
   head(10) %>% 
   kable(caption = "Top 10 risky group by gender in amusement parks in Texas",
         col.names = c("Gender", "Age", "Percent")) %>% 
-  kable_styling(bootstrap_options = c("striped", "hover"))
+  column_spec(column = 1:3, width = "4cm") %>% 
+  kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE)
 ```
 
 
@@ -272,7 +275,8 @@ safer_parks %>%
   head(10) %>% 
   kable(caption = "Top 10 risky device type",
         col.names = c("Device Type", "Total Number of Injuries")) %>% 
-  kable_styling(bootstrap_options = c("striped", "hover"))
+  column_spec(1, width = "6cm") %>% 
+  kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE)
 ```
 
 ```{r sq1-wordcloud, fig.cap = "Injury description --- word cloud", out.height= '100%', out.width= '100%'}
@@ -313,7 +317,8 @@ tx_season_table <- tx_injuries %>%
 tx_season_table %>% 
   kable(caption = "Amusement Rides Related Injuries across Years and Seasons", 
         col.names = c("Season", "2013", "2014", "2015", "2016", "2017")) %>% 
-  kable_styling(bootstrap_options = c("striped", "hover"))
+  column_spec(1, width = "4cm") %>% 
+  kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE)
 ```
 
 Figure \@ref(fig:seasonal-trends-plot) shows how the number of injuries occurred in amusement rides distributed across months and years. It is reflected in the graph that the highest number of injuries that occurred in a single month appeared in June 2015 with 41 injuries. Another interesting feature that appears in the graph is that the numbers of rides related injuries in 2014 and 2017 are relatively low compared to other years.
@@ -365,7 +370,7 @@ tx_comp_summary %>%
   head(5) %>% 
   kable(caption = "Top 5 Accidents by Insurance Agents", 
         col.names = c("Insurance Agents", "Total Injuries")) %>% 
-  kable_styling(bootstrap_options = c("striped", "hover"))
+  kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE)
 ```
 
 It will also be useful to see the trends of these injuries over the year. Figure \@ref(fig:accidents-by-insurance-yearly) shows that while the trends of total injuries fluctuate across the year, they had a downward trajectory in general. Hartford Fire Insurance Company, in particular, shows a constant and significant reduction in total ride related injuries across the year. In contrast, Everest Indemnity Insurance Company underwent a reverse trend where its number of ride related injuries rose every year.
@@ -413,7 +418,7 @@ Find out the most dangerous ride in each state, displaying the number of injurie
 
 ```{r manufacturer}
 safer_parks %>% 
-  group_by(manufacturer, acc_state) %>% 
+  group_by(manufacturer) %>% 
   summarise(total_injuries_manu = sum(num_injured)) %>% 
   arrange(desc(total_injuries_manu))
 ```
