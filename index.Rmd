@@ -3,8 +3,8 @@ title: "ETC5521 Assignment 1"
 subtitle: "Amusement Park injuries"
 team: "bilby"
 author:
-  - "Yuheng Cui"
-  - "Jimmy Effendy"
+  - "(Yuheng Cui)"
+  - "(Jimmy Effendy)"
   - "Weihao Li"
   - "Yan Ma"
 date: "`r Sys.Date()`"
@@ -21,7 +21,7 @@ bibliography: reference.bib
 link-citations: yes
 ---
 
-[This assignment is for ETC5521 Assignment 1 by Team `r rmarkdown::metadata$team` comprising of `r knitr::combine_words(rmarkdown::metadata$author)`.]{style="color:#006DAE;"}
+[This assignment is for ETC5521 Assignment 1 & 2 by Team `r rmarkdown::metadata$team` comprising of `r knitr::combine_words(rmarkdown::metadata$author)`.]{style="color:#006DAE;"}
 
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, fig.align = "center")
@@ -33,7 +33,7 @@ library(lubridate)
 library(knitr)
 library(kableExtra)
 library(tidytext)
-library(wordcloud)
+library(wordcloud2)
 library(here)
 library(janitor)
 library(plotly)
@@ -59,57 +59,129 @@ While accidents that occur in amusement parks are arguably not frequent, they ge
 
 Thorough evaluations to injury records related to amusement rides are aligned with public interests and are integral to encourage constant improvement in the industry. This paper aims to find factors that have major influence to amusement ride accidents. Uncovering this insight may encourage amusement park owners to utilize their resources more wisely in favor of those groups or equipment that are at the most risk. In addition, this report may also facilitate regulatory bodies when safety standards and regulations are developed.
 
-In addition, this study intends to find out the patterns within injured groups. The patterns refer to the high-risk groups, high-risk equipment and seasonal trend of injuries. We believe amusement park must make the effort to reduce the incidents; the effort refers to maintaining equipment, training staff and monitoring visitors. At same time, visitors should also follow the parks regulations and equipment instructions. After all, visitors should be responsible for their own safeties in the first place. Reduce the injuries occur in amusement parks and increase the well beings of society. 
+We believe amusement park must make the effort to reduce the incidents; the effort refers to maintaining equipment, training staff and monitoring visitors. At same time, visitors should also follow the parks regulations and equipment instructions. After all, visitors should be responsible for their own safeties in the first place. Reduce the injuries occur in amusement parks and increase the well beings of society. 
 
-Firstly, description of data used in the report and how it is prepared for analysis will be discussed. Then, analysis and findings acquired from the data set will be presented and discussed.
+Firstly, description of data used in the report and how it is prepared for analysis will be discussed. Then, analysis and findings acquired from the dataset will be presented and discussed. In the end, there will be a conclusion on major findings and discussion on future studies.
 
 # Data Description
 
-The datasets are downloaded from [here](https://github.com/rfordatascience/tidytuesday/tree/master/data/2019/2019-09-10) from GitHub. There are two datasets provided in the repository; one originated from [data.world](https://data.world/amillerbernd/texas-amusement-park-accidents) and another from [Saferparks database](https://ridesdatabase.org/saferparks/data/). An additional data from Texas Department of Insurance (TDI) about current available insurance policies is used for this report [@tdi_pol].
+The datasets are downloaded from the Github repository of [Tidy Tuesday](https://github.com/rfordatascience/tidytuesday/tree/master/data/2019/2019-09-10). @Tidy-Tuesday is a weekly social data project in R. We are using datasets adopted by its activity on September 10, 2019.
 
-The data.world data set originated from TDI [@dataworld]. It is a record of any injuries caused by an amusement ride from February the 1st 2013 to February the 1st 2017 occurring in the State of Texas [@dataworld]. An amusement ride is "any mechanical, gravity, or water device or devices that carry or convey passengers along, around, or over a fixed or restricted route or course or within a defined area for the purpose of giving its passengers amusement, pleasure, or excitement" [@tdi]. According to TDI [-@tdi], a quarterly injury report needed to be submitted by amusement ride owners and operators. TDI further stated that this record relates to any injuries that require medical treatment or result in death. 
+There are two datasets provided in the repository; one originated from [data.world](https://data.world/amillerbernd/texas-amusement-park-accidents) and another from [Saferparks database](https://ridesdatabase.org/saferparks/data/). An additional data from Texas Department of Insurance (TDI) about current available insurance policies is used for this report [@tdi_pol].
 
-This data set has `r nrow(tx_injuries)` number of observations and `r ncol(tx_injuries)` number of variables. Fig \@ref(fig:quality-of-tx) shows the data set has too many missing values in **other** variable and many missing values in **serial_no** variable. Good news is that these two variables has little effects on our analysis, thus, we can remove these two variables. **Age** should be converted to numeric variable and **injury_date** should be date variable.
+## Injury records in Texas amusement parks  (`tx_injuries.csv`)
 
-```{r quality-of-tx, fig.cap = "Texas amusement parks dataset"}
+The Texas amusement parks injury dataset originated from data.world is collected by Texas Department of Insurance (TDI) [@dataworld]. It is a record of any injuries caused by an amusement ride from February the 1st 2013 to February the 1st 2017 occurring in the State of Texas [@dataworld]. An amusement ride is "any mechanical, gravity, or water device or devices that carry or convey passengers along, around, or over a fixed or restricted route or course or within a defined area for the purpose of giving its passengers amusement, pleasure, or excitement" [@tdi]. According to TDI [-@tdi], a quarterly injury report needed to be submitted by amusement ride owners and operators. TDI further stated that this record relates to any injuries that require medical treatment or result in death. 
+
+This dataset has `r nrow(tx_injuries)` number of observations and `r ncol(tx_injuries)` number of variables. The name, type and description of each variable in `tx_injuries.csv` can be found in the data dictionary below.
+
+|variable          |class     |description |
+|:-----------------|:---------|:-----------|
+|injury_report_rec |double    | Unique Record ID |
+|name_of_operation |character | Company name |
+|city              |character | City |
+|st                |character | State (all TX) |
+|injury_date       |character | Injury date - note there are some different formats |
+|ride_name         |character | Ride Name |
+|serial_no         |character | Serial number of ride |
+|gender            |character | Gender of the injured individual |
+|age               |character | Age of the injured individual |
+|body_part         |character | Body part injured |
+|alleged_injury    |character | Alleged injury - type of injury |
+|cause_of_injury   |character | Approximate cause of the injury (free text) |
+|other             |character | Anecdotal information in addition to cause of injury |
+
+From the data quality check in Fig \@ref(fig:quality-of-tx), we find the dataset has high percentage of missing values in variable `other` and `serial_no`. However, it has minor effect on our analysis. Thus, they can be removed from the dataset. Besides, there are potential issues with the data types of variable `age` and `injury_date`, which can be solved by converting them into `integer` and `date` respectively.
+
+```{r quality-of-tx, fig.cap = 'A visualization of data quality check on Injury records in Texas amusement parks. The data plot is an "at-a-glance" plot generated using the `visdat` package. The y axis represent each observation, and the x axis represent each variable. In this dataset, most of the variables are provided in "character" with few missing values. Serious data quality issues can be observed in variable `serial_no` and `other`, but they are irrelevant to this analysis.'}
+
 vis_dat(tx_injuries)
 ```
 
-The accidents records in the Saferparks data set, on the other hand, originated from the U.S. State and Federal safety agencies regulating amusement rides [@saferpark_web]. Saferparks achieved this by submitting public records requests to those agencies (both federal and states agencies). In some cases, additional requests were submitted to specific agencies to achieve particular goals [@saferpark_web]. As a result, Saferparks needs to harmonize these data sets into their database.  
+## Accidents records (`safer_parks.csv`)
 
-It has `r nrow(safer_parks)` observations and `r ncol(safer_parks)` variables. Fig \@ref(fig:quality-of-safer) shows 4 variables have too many missing values to be analysed, therefore, we ought to ignore them. **acc_date** should be converted to date variable. Although **manufacturer** has many missing values as well, we decided to keep it because it may be insightful.
+The accidents records in the Saferparks dataset, on the other hand, originated from the U.S. State and Federal safety agencies regulating amusement rides [@saferpark_web]. Saferparks achieved this by submitting public records requests to those agencies (both federal and states agencies). In some cases, additional requests were submitted to specific agencies to achieve particular goals [@saferpark_web]. As a result, Saferparks needs to harmonize these datasets into their database.  
 
-```{r quality-of-safer, fig.cap = "Saferparks dataset"}
+It has `r nrow(safer_parks)` observations and `r ncol(safer_parks)` variables. The name, type and description of each variable in `safer_parks.csv` can be found in the data dictionary below.
+
+|variable             |class     |description |
+|:--------------------|:---------|:-----------|
+|acc_id               |double    | Unique ID |
+|acc_date             |character | Accident Date |
+|acc_state            |character | Accident State |
+|acc_city             |character | Accident City |
+|fix_port             |character |.           |
+|source               |character | Source of injury report |
+|bus_type             |character | Business type |
+|industry_sector      |character | Industry sector |
+|device_category      |character | Device category |
+|device_type          |character | Device type |
+|tradename_or_generic |character | Common name of the device |
+|manufacturer         |character | Manufacturer of device |
+|num_injured          |double    | Num injured |
+|age_youngest         |double    | Youngest individual injured |
+|gender               |character | Gender of individual injured |
+|acc_desc             |character | Description of accident |
+|injury_desc          |character | Injury description |
+|report               |character | Report URL |
+|category             |character | Category of accident |
+|mechanical           |double    | Mechanical failure (binary NA/1) |
+|op_error             |double    | Operator error (binary NA/1)|
+|employee             |double    | Employee error (binary NA/1)|
+|notes                |character | Additional notes| 
+
+
+The data quality check in Fig \@ref(fig:quality-of-safer) shows 4 variables have too many missing values to be analysed, therefore, we ought to ignore them. `acc_date` should be converted to date variable. Although `manufacturer` has many missing values as well, we decided to keep it because it may be insightful.
+
+```{r quality-of-safer, fig.cap = 'A data quality check on the Saferparks accidents dataset. The y axis represent each observation, and the x axis represent each variable. The data plot is an "at-a-glance" plot. This dataset has serious missing value issues in variable `manufacturer`, `report`, `notes`, `mechanical`, `op_error` and `employee`.'}
+
 vis_dat(safer_parks)
 ```
 
+## Insurance policies (`tx_policies.csv`)
+
+The insurance policies dataset originated from Texas Department of Insurance. This dataset lists the amusement ride current insurance policies in Texas. It has `r nrow(tx_policies)` observations and `r ncol(tx_policies)` variables. The name, type and description of each variable in `tx_policies.csv` can be found in the data dictionary below.
+
+|variable             |class     |description |
+|:--------------------|:---------|:-----------|
+|Record               |integer   | Unique ID  |
+|Name of Operation    |Character | Name of operation|
+|Expiration Date      |Character | The expiration date of the insurance policy|
+|Agent                |Character | The name of the sales agent|
+|Carrier              |Character | The name of the carrier|
+
+This dataset has very few missing values. Around `r format(mean(complete.cases(tx_policies))*100, digits = 3)`% cases are completed.
+
+
 ## Data Limitation
 
-As documentations related to accident reports provided by TDI are limited, it is difficult to determine the limitation related to the data set. In addition to a considerable amount of missing values in some of the variables, data dictionary is not provided by TDI. As a result, a fair amount of guesstimates were required for some of the variables provided. Lastly, there is some inconsistency of format in **injury_date** variable.
+As documentations related to accident reports provided by TDI are limited, it is difficult to determine the limitation related to the dataset. In addition to a considerable amount of missing values in some of the variables, data dictionary is not provided by TDI. As a result, a fair amount of guesstimates were required for some of the variables provided. Lastly, there is some inconsistency of format in `injury_date` variable.
 
 According to Saferparks [-@saferpark], reporting criteria and its level of details, types of equipment included, and years covered vary widely across year, industry sector, jurisdictions, and other factors. Saferparks further stated that States that are transparent, vigilantly monitor safety incidents, and implement data management systems that are efficient will log higher number of accidents. In other words, having high number of injuries may be an indications of being more attentive to safety, not less [@saferpark]. 
 
-While the data set can be used to uncover insights of how patrons got hurt in amusement rides, Saferparks do not recommend the data set to be used for comparison across states, parks, rides or years [@saferpark]. One of the reasons for this is that State laws in relation to amusement ride related injury reporting vary widely. For instance, it is mandatory to report go-kart accidents in Flordia but not in California.
+While the dataset can be used to uncover insights of how patrons got hurt in amusement rides, Saferparks do not recommend the dataset to be used for comparison across states, parks, rides or years [@saferpark]. One of the reasons for this is that State laws in relation to amusement ride related injury reporting vary widely. For instance, it is mandatory to report go-kart accidents in Flordia but not in California.
 
-Due to these limitations, the report will not use the Saferparks data set to analyze nation-wide patterns. Hence, this report will largely focus on amusement park accidents that occur in Texas, United States of America.
+Due to these limitations, the report will not use the Saferparks dataset to analyze nation-wide patterns. Hence, this report will largely focus on amusement park accidents that occur in Texas, United States of America.
 
 
 ## Data Cleaning and Transformation
 
-A considerable amount of data wangling needed to be done to the TDI injury data sets prior to the analysis. Firstly, there were inconsistencies of format in the date variable where some of the observations were stored in a serial number format that only Excel recognizes (e.g. 39448). Dates with this format needed to be converted to "YYYY-MM-DD" format.
+A considerable amount of data wangling needed to be done to the TDI injury datasets prior to the analysis. Firstly, there were inconsistencies of format in the date variable where some of the observations were stored in a serial number format that only Excel recognizes (e.g. 39448). Dates with this format needed to be converted to "YYYY-MM-DD" format.
 
-Secondly, the following variables were added to the TDI injury data set:
+Secondly, the following variables were added to the TDI injury dataset:
 
-* **injury_year**: the year when the observed injury occurred
-* **injury_month**: the month when the observed injury occurred
-* **injury_day**: the day when the observed injury occurred
-* **season**: the season (U.S.) when the observed injury occurred
+* `injury_year`: the year when the observed injury occurred
+* `injury_month`: the month when the observed injury occurred
+* `injury_day`: the day when the observed injury occurred
+* `season`: the season (U.S.) when the observed injury occurred
 
-TDI data set about current insurance policies were also needed to be cleaned. Firstly, the janitor package was used to make the column names tidy. Next, the agent variable were needed to be wrangled as there were many observations that were misspelled.
+TDI dataset about current insurance policies were also needed to be cleaned. Firstly, the `janitor` [@janitor] package was used to make the column names tidy. Next, the agent variable were needed to be wrangled as there were many observations that were misspelled.
 
-Finally, the TDI injury data set were combined with TDI insurance policies data set.
 
-Much of the data wrangling and transformation process were done by utilizing the dplyr and lubridate packages.
+
+Finally, the TDI injury dataset were combined with TDI insurance policies dataset.
+
+Much of the data wrangling and transformation process were done by utilizing the `dplyr` [@dplyr] and `lubridate` [@lubridate] packages.
 
 ```{r clean}
 #cleaning the injury_date variable
@@ -166,15 +238,11 @@ tx_comp <- tx_injuries %>%
 
 # Analysis and findings
 
-## Primary Question 
+## Do age and gender play a major role in amusement park accidents?
 
-**What are The high risk groups?**
+The primary question in this report is to discover the patterns in age and gender distribution of amusement park accidents. Consequently, help parks to identify certain high-risk groups and also remind the groups taking care of their own. The Saferparks dataset cannot be used here, because the dataset does not have detail individual records. Instead, we use the injury dataset reported by TDI.
 
-The primary question in this report is to find out the high-risk group. Consequently, help parks to target these groups and also remind the groups taking care of their own. We mainly analyse the age and gender for the primary quesiton. The Saferparks dataset cannot be used here, because the dataset does not have detail individual records; therefore, we do not know the ages of each injuried. 
-
-First, we need to clean the data. The missing values in age and gender is removed and the variable type is converted from character to numeric. Second, we unify the records in gender because some observations record gender male as 'M' while others record as 'm'. Third, calculate the percentage of each age group.
-
-```{r tx-pm1, fig.cap = "Bar plot for age"}
+```{r tx-pm1, fig.cap = "A faceted bar plot for age distribution in amusement park accident records. Missing values are removed. The x axis is the age, the y axis is the percentage. **interesting thing** "}
 tx_gender_age <- tx_injuries %>%
   # remove missing values in gender
   filter(!is.na(gender)) %>% 
@@ -190,47 +258,51 @@ tx_gender_age <- tx_injuries %>%
 
 tx_ob <- nrow(tx_gender_age)
 
-p1 <- tx_gender_age%>% 
+temp <- tx_gender_age%>%
+  filter(gender != "unknown") %>%
+  filter(age > 0) %>%
   group_by(gender, age) %>% 
   count(gender,age) %>% 
   ungroup() %>% 
   mutate(percent = round(n*100/tx_ob, 2)) %>% 
-  select(-n) %>% 
-  ggplot(aes(x = age, y = percent, fill = gender)) +
-  geom_bar(stat="identity")+
+  select(-n)
+
+p2 <- temp %>%  
+  ggplot() +
+  geom_bar(data = select(temp, -gender), aes(x = age, y = percent), stat = "identity", fill = "gray") +
+  geom_bar(aes(x = age, y = percent, fill = gender), stat="identity") +
   # geom_text(aes(y=label_ypos, label=percent), vjust=1.6, 
   #           color="white", size=3.5)+
   # scale_fill_brewer(palette="Paired")+
   theme_minimal() +
   xlab("Age") +
-  ylab("Percent")
+  ylab("Percent") +
+  facet_wrap(~gender, ncol = 1)
 
-ggplotly()
+ggplotly(p2)
 ```
 
+
 ```{r tx-pm1-tab}
-tx_gender_age %>% 
-  group_by(age) %>% 
-  count() %>% 
-  mutate(percent = n*100/tx_ob) %>% 
+temp %>%
+  mutate(age_group = cut(age, breaks = seq(0,75,5))) %>%
+  group_by(age_group) %>% 
+  summarise(percent = sum(percent)) %>%
   arrange(-percent) %>% 
-  select(-n) %>% 
   head(10) %>% 
-  kable(caption = "Top 10 risky age group in amusement parks in Texas",
+  kable(caption = "Top 10 most frequent age group in amusement parks accident records in Texas. **Interesting thing**",
         col.names = c("Age", "Percent")) %>% 
   kable_styling(bootstrap_options = c("striped", "hover"))
 ```
 
 ```{r tx-pm1-gender}
-tx_gender_age%>% 
-  group_by(gender, age) %>% 
-  count(gender,age) %>% 
-  ungroup() %>% 
-  mutate(percent = round(n*100/tx_ob, 2)) %>% 
-  select(-n) %>% 
+temp %>%
+  mutate(age_group = cut(age, breaks = seq(0,75,5))) %>%
+  group_by(gender, age_group) %>% 
+  summarise(percent = sum(percent)) %>%
   arrange(-percent) %>% 
   head(10) %>% 
-  kable(caption = "Top 10 risky group by gender in amusement parks in Texas",
+  kable(caption = "Top 10 most frequent group by gender and age in amusement parks accident records in Texas. **Interesting thing**",
         col.names = c("Gender", "Age", "Percent")) %>% 
   kable_styling(bootstrap_options = c("striped", "hover"))
 ```
@@ -238,38 +310,17 @@ tx_gender_age%>%
 
 
 ```{r tx-pm1-pct, include = FALSE}
-tx_kid <- tx_gender_age %>% 
-  group_by(age) %>% 
-  count() %>% 
-  mutate(percent = n*100/tx_ob) %>% 
-  arrange(-percent) %>% 
-  ungroup() %>% 
-  filter(age < 18 & age > 0) %>% 
-  pull(percent) %>% 
-  sum()
-
-tx_kid_fe <- tx_gender_age%>% 
-  group_by(gender, age) %>% 
-  count(gender,age) %>% 
-  ungroup() %>% 
-  mutate(percent = round(n*100/tx_ob, 2)) %>% 
-  filter(gender == "F" & age < 18 & age >0) %>% 
-  pull(percent) %>% 
-  sum()
-
-tx_kid_m <- tx_kid - tx_kid_fe
+tx_kid <- mean(temp$age<=15 & temp$age>5)
 ```
 
-Table \@ref(tab:tx-pm1-tab) shows the ranking of injuried ages. Injuried babies occupies nearly 10% of the dataset. In the dataset `r round(tx_kid, 2)` percent injuried are under 18, except babies. We distinguish babies from other age groups because babies are carried by their parents and babies are not able to move to any places by their own. 
+Table \@ref(tab:tx-pm1-tab) shows the ranking of injuried ages. Injuried babies occupies around 5% of the dataset. In the dataset `r round(tx_kid, 2)`% injuried are under 16, except babies. We distinguish babies from other age groups because babies are carried by their parents and babies are not able to move to any places by their own. 
 
-If we take gender into account, we can see gender distributions by age. Table \@ref(tab:tx-pm1-gender) shows the top-10 rankings by gender and age. In top-10 list, it seems that more girls get injuried than boys in amusement parks in Texas. However, if we look at the whole dataset, age 18, `r round(tx_kid_fe, 2)` percent are girls while `r round(tx_kid_m, 2)` are boys.
+If we take gender into account, we can see gender distributions by age. Table \@ref(tab:tx-pm1-gender) shows the top-10 rankings by gender and age. In top-10 list, it seems that more girls get injuried than boys in amusement parks in Texas. 
 
-In summary, the age range of the injured is broad (from 0 to 71). But the most injured are young people, especially for children (under 18). And the fact that almost 10 percent of the injured are babies indicates that parents must take care of their babies in amusement parks. They should put their babies in first priority.  
+In summary, the age range of the injured is broad (from 0 to 71). But the most injured are young people, especially for children (under 18). And the fact that around 5 percent of the injured are babies indicates that parents must take care of their babies in amusement parks. They should put their babies in first priority.  
 
 
-## First Secondary Question 
-
-**What is the most dangerous equipment in parks and what is the most body parts injured?**
+## What is the most dangerous equipment in parks and what is the most frequent words in injury description?
 
 First secondary question is "what is the most dangerous equipment in parks". We count the total number of injuries by device type. Table \@ref(tab:safer-equip) shows top-10 rankings of high-risk equipment. It is not surprising that roller coaster is the equipment that causes the most injuries. @gutierrez reported that seven cases are related to roller coaster among eight high-profile U.S. amusement park deaths before 2016. 
 
@@ -279,35 +330,37 @@ safer_parks %>%
   summarise(tot_num_injuries = sum(num_injured)) %>% 
   arrange(-tot_num_injuries) %>% 
   head(10) %>% 
-  kable(caption = "Top 10 risky device type",
-        col.names = c("Device Type", "Total Number of Injuries")) %>% 
+  kable(caption = "Top 10 most frequent device type in ",
+        col.names = c("Device Type", "Total Number of Injuries amusement parks accident records in US. **Interesting thing**")) %>% 
   kable_styling(bootstrap_options = c("striped", "hover"))
 ```
 
-```{r sq1-wordcloud, fig.cap = "Injury description --- word cloud", out.height= '100%', out.width= '100%'}
+
+
+```{r sq1-wordcloud, fig.cap = "Injury description --- word cloud. **Interesting thing**"}
 data(stop_words)
 pain <- tribble( # create a new list for removing common words in the injury description
   ~word, ~lexicon,
   "pain", "SMART",
   "injury", "SMART",
   "injuries", "SMART")
+
 safer_parks %>% 
   select(injury_desc) %>% 
   unnest_tokens(word, injury_desc) %>% 
   anti_join(stop_words) %>% 
   anti_join(pain) %>% 
   count(word) %>% 
-  with(wordcloud(word, n ,max.words = 80))
-
+  mutate(count = n) %>%
+  select(-n) %>%
+  wordcloud2(word, size = 1)
 ```
 
 First, We create a new list containing common workds, such as *injury*, *injuries* and *pain*. Second, we remove unimportant words from injury description. Finally, the word cloud is created. We can see that within the word cloud (Fig \@ref(fig:sq1-wordcloud)) bigger the word more often it appears. Head may be the most frequent word; so, we may assume that most people get hurt on their heads.
 
-In summary, in high proportion of injury cases, the injured get hurt of their upper half of the body.  amusement parks should pay extra attention on roller coaster because unlike other subjects, roller coaster's failure can cause severe consequence --- no one can escape once a roller coaster is launched. First, they should regularly maintain the roller coaster, in order to reduce mechanical failure. Second, train the staff and ask them to check to-do list every time launch the equipments. Third, ask visitors to follow the safety guide. Furthermore, visitors should also protect their head, neck and shoulder. Those body parts are vulnerable and important and they are always injuried in amusement park injury cases.
+In summary, in high proportion of injury cases, the injured get hurt of their upper half of the body.  Amusement parks should pay extra attention on roller coaster because unlike other subjects, roller coaster's failure can cause severe consequence --- no one can escape once a roller coaster is launched. First, they should regularly maintain the roller coaster, in order to reduce mechanical failure. Second, train the staff and ask them to check to-do list every time launch the equipments. Third, ask visitors to follow the safety guide. Furthermore, visitors should also protect their head, neck and shoulder. Those body parts are vulnerable and important and they are always injuried in amusement park injury cases.
 
-## Second Secondary Question
-
-**Does amusement ride injuries have seasonal characteristics?**
+## Does amusement ride injuries have seasonal characteristics?
 
 This section will examine whether seasonal trends affected number of amusement ride injuries across the year. Table \@ref(tab:seasonal-trends-table) shows that rides related injuries have seasonal trends and they are consistent across the years. The number of injuries occurred in autumn and winter seasons were relatively low. The number started to rise in spring, and reached its peak in summer.
 
@@ -358,11 +411,9 @@ tx_season_plot <- tx_month %>%
 ggplotly(tx_season_plot)
 ```
 
-## Third Secondary Question
+## What are the effects of insurance company to number of rides related injuries?
 
-**What are the effects of insurance company to number of rides related injuries?**
-
-According to TDI [-@tdi_req], every amusement ride in Texas is required to display a compliance sticker. To get these stickers, rides must be insured and inspected [@tdi_req]. TDI, however, are not involved with rides inspections. Instead, it is the ride owner's insurance company that are responsible to perform these inspections. This section will explore whether number of injuries vary across insurance agents responsible in inspecting the quality of rides. A summary table of accidents occurred by insurance agents were constructed by using the combined table of TDI injuries and insurance policies data set. Table \@ref(tab:accidents-by-insurance) shows that the majority of rides related injuries occurred in amusement parks that were overseen by Hartford Fire Insurance Company. The number is still larger compared to the number of injuries from the rest of the table combined.
+According to TDI [-@tdi_req], every amusement ride in Texas is required to display a compliance sticker. To get these stickers, rides must be insured and inspected [@tdi_req]. TDI, however, are not involved with rides inspections. Instead, it is the ride owner's insurance company that are responsible to perform these inspections. This section will explore whether number of injuries vary across insurance agents responsible in inspecting the quality of rides. A summary table of accidents occurred by insurance agents were constructed by using the combined table of TDI injuries and insurance policies dataset. Table \@ref(tab:accidents-by-insurance) shows that the majority of rides related injuries occurred in amusement parks that were overseen by Hartford Fire Insurance Company. The number is still larger compared to the number of injuries from the rest of the table combined.
 
 ```{r accidents-by-insurance}
 tx_comp_summary <- tx_comp %>% group_by(agent) %>%
@@ -400,13 +451,45 @@ accidents_insurance_fig <- tx_comp_summary %>%
 ggplotly(accidents_insurance_fig)
 ```
 
-# What are characteristics of body part injured? Is there any improvement in preventing serious injuries? 
+## What are characteristics of body part injured related to age, gender and devices?
 
-# State level analysis
-## The states with the most amusement park injuries
+```{r}
+word_list <- list("mouth", "knee", "shoulder", "foot", "back", "neck", "leg", "tail", "ankle", "tooth", "forearm", "lip", "finger", "seizure", "elbow", "face", "nose", "chin", "eye", "eyebrow", "forehead", "wrist", "ear", "genital", "knot", "hand", "abdomen", "arm", "clavical", "cheek", "chest", "glute", "rib", "toe", "jaw", "thumb", "teeth", "stomach", "groin", "hip", "clavicle", "skin", "eyelid", "collar", "vagina", "spleen", "butt", "body", "midsection", "torso")
+
+temp <- tx_injuries
+
+my_fun <- function(word){
+  temp[[word]] <<- grepl(word, tolower(temp$body_part), fixed = TRUE)
+  return()
+}
+
+temp2 <- map(word_list, my_fun)
+
+temp <- temp %>%
+  gather(key = "body_part_clean", value = "logic", mouth:torso) %>%
+  filter(logic) %>%
+  select(-logic)
+
+my_replace <- function(temp, a, b){
+  for (i in a){
+    temp <- mutate(temp, body_part_clean = ifelse(body_part_clean == i, b, body_part_clean))
+  }
+  return(temp)
+}
+
+temp <- temp %>%
+  my_replace(c("eyelid", "eyebrow"), "eye") %>%
+  my_replace("clavical", "clavicle")
+  
+  
+```
+
+
+## State level analysis
+### The states with the most amusement park injuries
 Analyse the tx_comp data by state, find the states with the most amusement park injuries. And create a heat map of injuries.
 
-## The most dangerous ride in each state
+### The most dangerous ride in each state
 Find out the most dangerous ride in each state, displaying the number of injuries and the manufacturer name. This could remind people to avoid the most dangerous ride in their state, and we can further analyse which manufacturer's products caused more injuries over the years.
 
 # Acknowledgments
