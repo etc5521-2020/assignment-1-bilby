@@ -405,12 +405,20 @@ Since the injury reporting mechanism varies from state to state, we only analyse
 ```{r texas-parks-injuries, fig.align='center', fig.cap="Amusement Park Injuries Ranking in Texas"}
 library(rlist)
 
-tx_injuries_top <- tx_injuries %>% 
-  mutate(name_of_operation = replace(name_of_operation, 
-                                     name_of_operation == "TYPHOON TEXAS ‐ AUSTIN", 
-                                     "Typhoon Texas - Austin")) 
+tx_injuries_top <- tx_injuries
 
-tx_injuries_top10 <- tx_injuries_top %>%
+tx_injuries_top$name_of_operation <- tolower(tx_injuries_top$name_of_operation)
+
+tx_injuries_tta <- tx_injuries_top %>% 
+  filter(str_detect(name_of_operation, "^typhoon")) %>% 
+  mutate(name_of_operation = "typhoon texas - austin")
+
+tx_injuries_other <- tx_injuries_top %>% 
+  filter(str_detect(name_of_operation, "^typhoon", negate = TRUE))
+  
+tx_injuries_top_lower <- bind_rows(tx_injuries_tta, tx_injuries_other)
+
+tx_injuries_top10 <- tx_injuries_top_lower %>%
   group_by(name_of_operation) %>% 
   summarise(total_injury = sum(injury_report_rec)) %>% 
   arrange(desc(total_injury)) %>% 
@@ -418,7 +426,7 @@ tx_injuries_top10 <- tx_injuries_top %>%
 
 injury_top_parks_tx <- as.list(unique(tx_injuries_top10$name_of_operation))
 
-tx_injuries_top %>% 
+tx_injuries_top_lower %>% 
   filter(name_of_operation %in% c(injury_top_parks_tx)) %>% 
   mutate(injury_year = as.factor(injury_year)) %>% 
   group_by(name_of_operation, injury_year) %>% 
