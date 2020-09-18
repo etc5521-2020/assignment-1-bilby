@@ -520,7 +520,7 @@ The first finding suggests that either devices that has higher chance to hurt pe
 The second finding suggests that either the difference of choice on devices between boys and girls leads to this findings, or the reckless behaviour of boys in amusement park puts them at risk of lower limbs injuries. 
 
 
-```{r yb, fig.cap="Grouped line plot for number of injury across 4 years faceted by different body part injuries. The main group is gender. The high number of lower limbs injuries in 2017 and upper limbs injuries in 2015 are mainly related to Skygroup investment LLC and Six Flags. In addition, there is a clear reduction on torso injuries.", fig.width=9}
+```{r yb, fig.cap="Grouped line plot for number of injury across 4 years faceted by different body part injuries. The main group is gender. The x axis is year and the y axis is number of injury. The high number of lower limbs injuries in 2017 and the high number of upper limbs injuries in 2015 are mainly related to Skygroup investment LLC and Six Flags. In addition, there is a clear reduction on torso injuries.", fig.width=9}
 temp %>%
   group_by(injury_year, gender, body_part) %>%
   summarise(count = n()) %>%
@@ -571,7 +571,7 @@ Since the injury reporting mechanism varies from state to state, we only analyse
 
 Figure \@ref(fig:texas-parks-injuries) shows the top 10 amusement parks which have the most injuries in Texas. We can see that the Six Flags Over Texas park has the most amusement park injuries in Texas, especially in year 2013 and 2014. The Sky group Investments LLC DBA iFly Houston Memorial	park had a significant large number of injuries in 2015, while the Typhoon Texas - Austin Park had lots of injuries in 2016.
 
-```{r texas-parks-injuries, fig.align='center', fig.cap="Amusement Park Injuries Ranking in Texas"}
+```{r texas-parks-injuries, fig.align='center', fig.cap="A segmented bar plot for amusement park Injuries Ranked by total number of injuries in Texas. The plot is filled by year. The x axis is number of injury and the y axis is park name. The top 2 park with most injuries are operated by Six Flags."}
 tx_injuries_top <- tx_injuries
 
 tx_injuries_top$name_of_operation <- tolower(tx_injuries_top$name_of_operation)
@@ -633,11 +633,11 @@ manufacturers <- manufacturers %>%
   mutate(percentage = total_injuries / injuries_all_manu)
 ```
 
-```{r manufacturer-plot, fig.align='center', fig.cap="Top 10 Manufacturers with Most Injuries"}
+```{r manufacturer-plot, fig.align='center', fig.cap="A bar plot to show top 10 manufacturers with most injuries. The x axis is number of injury and the y axis is name of manufacturer. We can clearly see a great proportion of injuries are related to in-house devices."}
 manufacturers %>% 
   ggplot(aes(x = reorder(manufacturer, total_injuries))) + 
   geom_col(aes( y = total_injuries, fill = manufacturer)) + 
-  geom_text(aes( y = percentage * 10000, label = round(percentage * 100, 2)), vjust = -0.2, size = 3) + 
+  geom_text(aes( y = percentage * 10000, label = paste0(round(percentage * 100, 2), "%")), vjust = -0.2, size = 3) + 
   scale_y_continuous(name = "Injuries") + 
   theme(legend.position = "none") + 
   ggtitle("Manufacturers Caused Most Injuries") + 
