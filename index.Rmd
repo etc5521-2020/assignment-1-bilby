@@ -290,9 +290,11 @@ temp %>%
   summarise(percent = sum(percent)) %>%
   arrange(-percent) %>% 
   head(10) %>% 
+
   kable(caption = "Top 10 most frequent age group in amusement parks accident records in Texas. **Interesting thing**",
         col.names = c("Age", "Percent")) %>% 
   kable_styling(bootstrap_options = c("striped", "hover"))
+
 ```
 
 ```{r tx-pm1-gender}
@@ -304,7 +306,8 @@ temp %>%
   head(10) %>% 
   kable(caption = "Top 10 most frequent group by gender and age in amusement parks accident records in Texas. **Interesting thing**",
         col.names = c("Gender", "Age", "Percent")) %>% 
-  kable_styling(bootstrap_options = c("striped", "hover"))
+  column_spec(column = 1:3, width = "4cm") %>% 
+  kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE)
 ```
 
 
@@ -330,9 +333,11 @@ safer_parks %>%
   summarise(tot_num_injuries = sum(num_injured)) %>% 
   arrange(-tot_num_injuries) %>% 
   head(10) %>% 
+
   kable(caption = "Top 10 most frequent device type in ",
         col.names = c("Device Type", "Total Number of Injuries amusement parks accident records in US. **Interesting thing**")) %>% 
   kable_styling(bootstrap_options = c("striped", "hover"))
+
 ```
 
 
@@ -375,7 +380,8 @@ tx_season_table <- tx_injuries %>%
 tx_season_table %>% 
   kable(caption = "Amusement Rides Related Injuries across Years and Seasons", 
         col.names = c("Season", "2013", "2014", "2015", "2016", "2017")) %>% 
-  kable_styling(bootstrap_options = c("striped", "hover"))
+  column_spec(1, width = "4cm") %>% 
+  kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE)
 ```
 
 Figure \@ref(fig:seasonal-trends-plot) shows how the number of injuries occurred in amusement rides distributed across months and years. It is reflected in the graph that the highest number of injuries that occurred in a single month appeared in June 2015 with 41 injuries. Another interesting feature that appears in the graph is that the numbers of rides related injuries in 2014 and 2017 are relatively low compared to other years.
@@ -425,7 +431,7 @@ tx_comp_summary %>%
   head(5) %>% 
   kable(caption = "Top 5 Accidents by Insurance Agents", 
         col.names = c("Insurance Agents", "Total Injuries")) %>% 
-  kable_styling(bootstrap_options = c("striped", "hover"))
+  kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE)
 ```
 
 It will also be useful to see the trends of these injuries over the year. Figure \@ref(fig:accidents-by-insurance-yearly) shows that while the trends of total injuries fluctuate across the year, they had a downward trajectory in general. Hartford Fire Insurance Company, in particular, shows a constant and significant reduction in total ride related injuries across the year. In contrast, Everest Indemnity Insurance Company underwent a reverse trend where its number of ride related injuries rose every year.
@@ -485,12 +491,90 @@ temp <- temp %>%
 ```
 
 
-## State level analysis
-### The states with the most amusement park injuries
-Analyse the tx_comp data by state, find the states with the most amusement park injuries. And create a heat map of injuries.
 
-### The most dangerous ride in each state
-Find out the most dangerous ride in each state, displaying the number of injuries and the manufacturer name. This could remind people to avoid the most dangerous ride in their state, and we can further analyse which manufacturer's products caused more injuries over the years.
+# What amusement parks have most injuries in Texas?
+
+Since the injury reporting mechanism varies from state to state, we only analysed the injuries in each park in Texas (assuming that the injury reporting mechanism is the same across parks in Texas). We want to analyse not only the injuries happened every year in each park, but also the total injuries accross all the years in each park, so we also kept the injury records with missing injury_year values. Figure \@ref(fig:texas-parks-injuries) shows the top 10 amusement parks which have the most injuries in Texas. We can see that the Typhoon Texas - Austin park has the most amusement park injuries in Texas. The Skygroup Investments LLC DBA iFly Houston Memorial	park had a significant large number of injuries in 2015, while the Typhoon Texas Water Park had lots of injuries in 2016.
+
+```{r texas-parks-injuries, fig.align='center', fig.cap="Amusement Park Injuries Ranking in Texas"}
+library(rlist)
+
+tx_injuries_top <- tx_injuries
+
+tx_injuries_top$name_of_operation <- tolower(tx_injuries_top$name_of_operation)
+
+tx_injuries_tta <- tx_injuries_top %>% 
+  filter(str_detect(name_of_operation, "^typhoon")) %>% 
+  mutate(name_of_operation = "typhoon texas - austin")
+
+tx_injuries_other <- tx_injuries_top %>% 
+  filter(str_detect(name_of_operation, "^typhoon", negate = TRUE))
+  
+tx_injuries_top_lower <- bind_rows(tx_injuries_tta, tx_injuries_other)
+
+tx_injuries_top10 <- tx_injuries_top_lower %>%
+  group_by(name_of_operation) %>% 
+  summarise(total_injury = sum(injury_report_rec)) %>% 
+  arrange(desc(total_injury)) %>% 
+  head(10)
+
+injury_top_parks_tx <- as.list(unique(tx_injuries_top10$name_of_operation))
+
+tx_injuries_top_lower %>% 
+  filter(name_of_operation %in% c(injury_top_parks_tx)) %>% 
+  mutate(injury_year = as.factor(injury_year)) %>% 
+  group_by(name_of_operation, injury_year) %>% 
+  summarise(total_injury = sum(injury_report_rec)) %>% 
+  ggplot(aes(x = factor(name_of_operation, level = list.reverse(injury_top_parks_tx)), 
+             y = total_injury,
+             fill = injury_year)) + 
+  geom_col() + 
+  coord_flip() + 
+  xlab("Park Name") + 
+  ylab("Injuries") + 
+  labs(fill = "Year") + 
+  ggtitle("Amusement Parks with Most Injuries in Texas")
+```
+
+# What manufacturer's product caused the most amusement park injuries?
+In this part, we will find out the manufacturers whose products caused most amusement injuries over the years. This could remind amusement parks have devices from these manufacturers to maintain their devices carefully. Figure \@ref(fig:manufacturer-plot) shows the top 10 manufacturers whose products caused most amusement injuries over the years and the percentage of total injuries recorded in the safer_park data set.
+
+There are 254 manufacturers' records in this data set, and the total injuries of them is 8793, while the total injuries of the top 10 manufacturers is 2841. The top 10 manufacturers accounted for 32.3% of all amusement park injuries. It' is worth's noteworthy that in-house manufactured devices accounts for more than 10% of total injuries.
+
+```{r manufacturer}
+manufacturers <- safer_parks %>% 
+  group_by(manufacturer) %>% 
+  summarise(total_injuries = sum(num_injured)) %>% 
+  arrange(desc(total_injuries)) %>% 
+  head(10) 
+
+manufacturers %>% 
+  summarise(n = sum(total_injuries)) %>% 
+  pull() -> top_manu_injuries
+
+injuries_all_manu <- sum(safer_parks$num_injured, na.rm = TRUE)
+
+count_manufacturer <- length(unique(safer_parks$manufacturer))
+
+manufacturers <- manufacturers %>% 
+  mutate(percentage = total_injuries / injuries_all_manu)
+```
+
+```{r manufacturer-plot, fig.align='center', fig.cap="Top 10 Manufacturers with Most Injuries"}
+manufacturers %>% 
+  ggplot(aes(x = manufacturer)) + 
+  geom_col(aes( y = total_injuries, fill = manufacturer)) + 
+  geom_line(aes( y = percentage * 10000, group = 1, color = "red")) + 
+  geom_text(aes( y = percentage * 10000, label = round(percentage * 100, 2)), vjust = -0.2, size = 3) + 
+  scale_y_continuous(name = "Injuries by Manufacturer", 
+                     sec.axis = sec_axis(name = "Percentage of Total Injuries", 
+                                         trans = ~ . / 100)) + 
+  theme(axis.text.x = element_text(angle = 90), 
+        legend.position = "none") + 
+  ggtitle("Manufacturers Caused Most Injuries")
+```
+
+
 
 # Acknowledgments
 The following packages are used to produce this report:
