@@ -407,7 +407,7 @@ It will also be useful to see the trends of these injuries over the year. Figure
 
 It is important to note that having a high number of injuries is not necessarily a reflection of an insurance company being negligence. It may be the case that the parks overseen by the insurance company attracts much more guests compared to other parks. However, given the government is not responsible in overseeing the condition of the rides, it is important to see how the number of injuries distributed to each insurance agents. Further analysis may be warranted to uncover the drivers behind the variability of the number of injuries across insurance agents, as well as its trends across the year. For instance, it may be beneficial to investigate why the rides related injuries constantly decreases every year for Hartford Fire Insurance Company. Insights gained from this investigation have the potential to help the industry as well as the general public as it may minimize rides related accidents. Unfortunately, this is out of scope for this paper due to limitation of data availability.
 
-```{r accidents-by-insurance-yearly, fig.width=10, fig.cap= "Yearly Trend of Number of Rides Related Injuries in Texas"}
+```{r accidents-by-insurance-yearly, fig.width=9, fig.cap= "Yearly Trend of Number of Rides Related Injuries in Texas"}
 tx_comp_summary <- tx_comp %>% group_by(agent, injury_year) %>%
   filter(agent != "NA") %>% 
   tally()
@@ -426,7 +426,7 @@ accidents_insurance_fig <- tx_comp_summary %>%
 ggplotly(accidents_insurance_fig)
 ```
 
-## what is the most frequent words in injury description? What are characteristics of body part injured related to age, gender? What is the trend of body part injured over these years?
+## what is the most frequent words in injury description? And what are the characteristics of body part injured related to age, gender and year?
 
 ```{r sq1-wordcloud, fig.cap = "Injury description --- word cloud. **Interesting thing**"}
 data(stop_words)
@@ -451,7 +451,9 @@ First, We create a new list containing common workds, such as *injury*, *injurie
 
 In summary, in high proportion of injury cases, the injured get hurt of their upper half of the body.  Amusement parks should pay extra attention on roller coaster because unlike other subjects, roller coaster's failure can cause severe consequence --- no one can escape once a roller coaster is launched. First, they should regularly maintain the roller coaster, in order to reduce mechanical failure. Second, train the staff and ask them to check to-do list every time launch the equipments. Third, ask visitors to follow the safety guide. Furthermore, visitors should also protect their head, neck and shoulder. Those body parts are vulnerable and important and they are always injuried in amusement park injury cases.
 
-```{r bag, fig.cap="kkkk"}
+We then dig into the details of body part injured using only the accidents in Texas. We group the body parts into head, neck, upper limbs, torso and lower limbs. And then analyse its relationships with age, gender and year.
+
+```{r bag, fig.cap="A grouped violin plot for age. The main group is body part injured and the subgroup is gender. People who get head injuries are more likely to be young people. A great proportion of people who get lower limbs injuries are boys."}
 word_list <- list("mouth", "knee", "shoulder", "foot", "back", "neck", "leg", "tail", "ankle", "tooth", "forearm", "lip", "finger", "seizure", "elbow", "face", "nose", "chin", "eye", "eyebrow", "forehead", "wrist", "ear", "genital", "knot", "hand", "abdomen", "arm", "clavical", "cheek", "chest", "glute", "rib", "toe", "jaw", "thumb", "teeth", "stomach", "groin", "hip", "clavicle", "skin", "eyelid", "collar", "vagina", "spleen", "butt", "body", "midsection", "torso")
 
 temp <- tx_injuries
@@ -497,18 +499,55 @@ p <- temp %>%
 p
 ```
 
-```{r yb, fig.cap="sdfsjl"}
+From the Fig \@ref(fig:bag), we find that people who get head injuries are most likely to be people with age below 20. Besides, the number of boys get lower limbs injuries is significantly larger than the number of girls get lower limbs injuries.
+
+The first finding suggests that either devices that has higher chance to hurt people's head are more popular among young people, or young people are at a higher risk of head injuries in amusement park. Both of the hypotheses need to be examined by stakeholders carefully and then take actions to mitigate them.
+
+The second finding suggests that either the difference of choice on devices between boys and girls leads to this findings, or the reckless behaviour of boys in amusement park puts them at risk of lower limbs injuries. 
+
+
+```{r yb, fig.cap="Grouped line plot of number of injury across 4 years faceted with different body part injuries. The main group is gender. The high number of lower limbs injuries in 2017 and upper limbs injuries in 2015 are mainly related to Skygroup investment LLC and Six Flags.", fig.width=9}
 temp %>%
-  group_by(injury_year, body_part) %>%
+  group_by(injury_year, gender, body_part) %>%
   summarise(count = n()) %>%
   ggplot() +
-  geom_point(aes(injury_year, count, col = body_part)) +
-  geom_line(aes(injury_year, count, col = body_part)) -> p
+  geom_point(aes(injury_year, count, col = gender)) +
+  geom_line(aes(injury_year, count, col = gender)) +
+  xlab('Year') +
+  ylab('Number of injury') +
+  facet_wrap(~body_part) +
+  theme_minimal()-> p
 
 ggplotly(p)
 ```
 
+In Fig. \@ref(fig:yb) we will not compare the absolute values between gender given we don't know the underlying probability of a visitor is a female, but we can assume the total number of visitors in each year will be not that different. Thus, we will focus on the trend over years.
 
+We can observe the cases in upper limbs in 2015 has a significantly high values in both male and female. This one is interesting and if we further investigate it, we will find that in Tab. \@ref(tab:furtheri), they are mostly caused by a ride called "iFly" operated by Skygroup Investments LLC. Even more interestingly, if we dig into the high number of female lower limbs injuries in 2017 in Tab. \ref(tab:furtherii), we will see the "Hurricane Harbor" operated by Six Flags which is ranked third in Tab. \ref(tab:furtheri) appears again. In conclusion, there are potential issues in devices operated by these two companies. 
+
+Other than that, in Fig. \@ref(fig:yb) we can observe a clear declining trend of cases in torso. That is a good sign of protecting people from being serious injured. 
+
+```{r furtheri}
+filter(temp, injury_year == 2015, body_part == "upper limbs") %>%
+  select(name_of_operation, ride_name) %>%
+  arrange(name_of_operation, ride_name) %>%
+  group_by(name_of_operation) %>%
+  summarise(count = n()) %>%
+  arrange(-count, name_of_operation) %>%
+  kable(col.names = c("name of operation", "count"), caption = "Name of operation related to lower limbs injuries in 2015.") %>% 
+  kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
+```{r furtherii}
+filter(temp, injury_year == 2017, body_part == "lower limbs", gender == "F") %>%
+  select(name_of_operation, ride_name) %>%
+  arrange(name_of_operation, ride_name) %>%
+  group_by(name_of_operation) %>%
+  summarise(count = n()) %>%
+  arrange(-count, name_of_operation) %>%
+  kable(col.names = c("name of operation", "count"), caption = "Name of operation related to female upper limbs injuries in 2015.") %>% 
+  kable_styling(bootstrap_options = c("striped", "hover"))
+```
 
 
 ## State level analysis
