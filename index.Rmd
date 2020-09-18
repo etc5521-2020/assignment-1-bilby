@@ -644,9 +644,22 @@ manufacturers %>%
   ggtitle("Manufacturers Caused Most Injuries")
 ```
 
-# Conclusion
+# Conclusions
 
-**write here**
+In this report, we analysed the amusement park injuries datasets of the U.S. Since there's no data related to the total number of visitors, it's hard to say whether the parks with less injuries are more safer than others. Keeping this in mind, we find several interesting questions.
+
+- About half of the injured visitors are younger than 35 years old, and the age group with the most injuries is children between 10 and 15 years old. Injuries of girls in this age group is slightly more than that of boys.
+
+- Coasters caused more injuries than other kind of rides. In high proportion of injury cases, the injured get hurt of their upper half of the body. 
+
+- In summer, there are more visitors injured in amusement parks, while in winter the number of injuries is much smaller. This may because there are more visitors in summer.
+
+- Of all the injuries, the most are related to the devices insured by the Hartford Fire Insurance Company. But having a high number of injuries is not necessarily a reflection of an insurance company being negligence. It may be the case that the parks overseen by the insurance company attracts much more guests compared to other parks. 
+
+- In Texas, the Six Flags Over Texas park has the most amusement park injuries, especially in year 2013 and 2014. The Skygroup Investments LLC DBA iFly Houston Memorial park had a significant large number of injuries in 2015, while the Typhoon Texas Austin Park had lots of injuries in 2016.
+
+- The in-house manufactured amusement park devices accounts for more than 10% of total injuries. This is a security hazard that can't be ignored. The top 10 manufacturers who caused most injuries accounted for 32.3% of all injuries, while there are 254 manufacturers’ records in this data set.
+
 
 # Acknowledgments
 The following packages are used to produce this report:
