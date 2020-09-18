@@ -294,7 +294,8 @@ temp %>%
 
   kable(caption = "Top 10 most frequent age group in amusement parks accident records in Texas. **Interesting thing**",
         col.names = c("Age", "Percent")) %>% 
-  kable_styling(bootstrap_options = c("striped", "hover"))
+  column_spec(column = 1:2, width = "6cm") %>% 
+  kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE)
 
 ```
 
@@ -495,7 +496,9 @@ temp <- temp %>%
 
 ## What amusement parks have most injuries in Texas?
 
-Since the injury reporting mechanism varies from state to state, we only analysed the injuries in each park in Texas (assuming that the injury reporting mechanism is the same across parks in Texas). We want to analyse not only the injuries happened every year in each park, but also the total injuries across all the years in each park, so we also kept the injury records with missing injury_year values. Figure \@ref(fig:texas-parks-injuries) shows the top 10 amusement parks which have the most injuries in Texas. We can see that the Six Flags Over Texas park has the most amusement park injuries in Texas. The Sky group Investments LLC DBA iFly Houston Memorial	park had a significant large number of injuries in 2015, while the Typhoon Texas - Austin Park had lots of injuries in 2016.
+Since the injury reporting mechanism varies from state to state, we only analysed the injuries in each park in Texas (assuming that the injury reporting mechanism is the same across parks in Texas). We want to analyse not only the injuries happened every year in each park, but also the total injuries across all the years in each park, so we also kept the injury records with missing injury_year values. 
+
+Figure \@ref(fig:texas-parks-injuries) shows the top 10 amusement parks which have the most injuries in Texas. We can see that the Six Flags Over Texas park has the most amusement park injuries in Texas, especially in year 2013 and 2014. The Sky group Investments LLC DBA iFly Houston Memorial	park had a significant large number of injuries in 2015, while the Typhoon Texas - Austin Park had lots of injuries in 2016.
 
 ```{r texas-parks-injuries, fig.align='center', fig.cap="Amusement Park Injuries Ranking in Texas"}
 tx_injuries_top <- tx_injuries
@@ -538,7 +541,7 @@ tx_injuries_top_lower %>%
 ## What manufacturer's product caused the most amusement park injuries?
 In this part, we will find out the manufacturers whose products caused most amusement injuries over the years. This could remind amusement parks who have devices from these manufacturers to maintain their devices carefully. Figure \@ref(fig:manufacturer-plot) shows the top 10 manufacturers whose products caused most amusement injuries over the years and the percentage of total injuries recorded in the safer_park data set.
 
-There are 254 manufacturers' records in this data set, and the total injuries of them is 8793, while the total injuries of the top 10 manufacturers is 2841. The top 10 manufacturers accounted for 32.3% of all amusement park injuries. It's worth noteworthy that in-house manufactured devices accounts for more than 10% of total injuries.
+There are 254 manufacturers' records in this data set, and the total injuries of them is 8793, while the total injuries of the top 10 manufacturers is 2841. The top 10 manufacturers accounted for 32.3% of all amusement park injuries. It's noteworthy that in-house manufactured devices accounts for more than 10% of total injuries.
 
 ```{r manufacturer}
 manufacturers <- safer_parks %>% 
