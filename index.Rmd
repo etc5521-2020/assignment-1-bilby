@@ -632,16 +632,14 @@ manufacturers <- manufacturers %>%
 
 ```{r manufacturer-plot, fig.align='center', fig.cap="Top 10 Manufacturers with Most Injuries"}
 manufacturers %>% 
-  ggplot(aes(x = manufacturer)) + 
+  ggplot(aes(x = reorder(manufacturer, total_injuries))) + 
   geom_col(aes( y = total_injuries, fill = manufacturer)) + 
-  geom_line(aes( y = percentage * 10000, group = 1, color = "red")) + 
   geom_text(aes( y = percentage * 10000, label = round(percentage * 100, 2)), vjust = -0.2, size = 3) + 
-  scale_y_continuous(name = "Injuries by Manufacturer", 
-                     sec.axis = sec_axis(name = "Percentage of Total Injuries", 
-                                         trans = ~ . / 100)) + 
-  theme(axis.text.x = element_text(angle = 90), 
-        legend.position = "none") + 
-  ggtitle("Manufacturers Caused Most Injuries")
+  scale_y_continuous(name = "Injuries") + 
+  theme(legend.position = "none") + 
+  ggtitle("Manufacturers Caused Most Injuries") + 
+  xlab("Manufacturer") + 
+  coord_flip()
 ```
 
 # Conclusions
