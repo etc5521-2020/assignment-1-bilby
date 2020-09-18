@@ -4,8 +4,8 @@ Team name: bilby
 
 Team members:
 
-* Yuheng Cui
-* Jimmy Effendy
+* (Yuheng Cui)
+* (Jimmy Effendy)
 * Weihao Li
 * Yan Ma
 
