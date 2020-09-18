@@ -320,7 +320,7 @@ If we take gender into account, we can see gender distributions by age. Table \@
 In summary, the age range of the injured is broad (from 0 to 71). But the most injured are young people, especially for children (under 18). And the fact that around 5 percent of the injured are babies indicates that parents must take care of their babies in amusement parks. They should put their babies in first priority.  
 
 
-## What is the most dangerous equipment in parks and what is the most frequent words in injury description?
+## What is the most dangerous equipment in parks?
 
 First secondary question is "what is the most dangerous equipment in parks". We count the total number of injuries by device type. Table \@ref(tab:safer-equip) shows top-10 rankings of high-risk equipment. It is not surprising that roller coaster is the equipment that causes the most injuries. @gutierrez reported that seven cases are related to roller coaster among eight high-profile U.S. amusement park deaths before 2016. 
 
@@ -334,31 +334,6 @@ safer_parks %>%
         col.names = c("Device Type", "Total Number of Injuries amusement parks accident records in US. **Interesting thing**")) %>% 
   kable_styling(bootstrap_options = c("striped", "hover"))
 ```
-
-
-
-```{r sq1-wordcloud, fig.cap = "Injury description --- word cloud. **Interesting thing**"}
-data(stop_words)
-pain <- tribble( # create a new list for removing common words in the injury description
-  ~word, ~lexicon,
-  "pain", "SMART",
-  "injury", "SMART",
-  "injuries", "SMART")
-
-safer_parks %>% 
-  select(injury_desc) %>% 
-  unnest_tokens(word, injury_desc) %>% 
-  anti_join(stop_words) %>% 
-  anti_join(pain) %>% 
-  count(word) %>% 
-  mutate(count = n) %>%
-  select(-n) %>%
-  wordcloud2(word, size = 1)
-```
-
-First, We create a new list containing common workds, such as *injury*, *injuries* and *pain*. Second, we remove unimportant words from injury description. Finally, the word cloud is created. We can see that within the word cloud (Fig \@ref(fig:sq1-wordcloud)) bigger the word more often it appears. Head may be the most frequent word; so, we may assume that most people get hurt on their heads.
-
-In summary, in high proportion of injury cases, the injured get hurt of their upper half of the body.  Amusement parks should pay extra attention on roller coaster because unlike other subjects, roller coaster's failure can cause severe consequence --- no one can escape once a roller coaster is launched. First, they should regularly maintain the roller coaster, in order to reduce mechanical failure. Second, train the staff and ask them to check to-do list every time launch the equipments. Third, ask visitors to follow the safety guide. Furthermore, visitors should also protect their head, neck and shoulder. Those body parts are vulnerable and important and they are always injuried in amusement park injury cases.
 
 ## Does amusement ride injuries have seasonal characteristics?
 
@@ -451,9 +426,32 @@ accidents_insurance_fig <- tx_comp_summary %>%
 ggplotly(accidents_insurance_fig)
 ```
 
-## What are characteristics of body part injured related to age, gender and devices?
+## what is the most frequent words in injury description? What are characteristics of body part injured related to age, gender? What is the trend of body part injured over these years?
 
-```{r}
+```{r sq1-wordcloud, fig.cap = "Injury description --- word cloud. **Interesting thing**"}
+data(stop_words)
+pain <- tribble( # create a new list for removing common words in the injury description
+  ~word, ~lexicon,
+  "pain", "SMART",
+  "injury", "SMART",
+  "injuries", "SMART")
+
+safer_parks %>% 
+  select(injury_desc) %>% 
+  unnest_tokens(word, injury_desc) %>% 
+  anti_join(stop_words) %>% 
+  anti_join(pain) %>% 
+  count(word) %>% 
+  mutate(count = n) %>%
+  select(-n) %>%
+  wordcloud2(word, size = 1)
+```
+
+First, We create a new list containing common workds, such as *injury*, *injuries* and *pain*. Second, we remove unimportant words from injury description. Finally, the word cloud is created. We can see that within the word cloud (Fig \@ref(fig:sq1-wordcloud)) bigger the word more often it appears. Head may be the most frequent word; so, we may assume that most people get hurt on their heads.
+
+In summary, in high proportion of injury cases, the injured get hurt of their upper half of the body.  Amusement parks should pay extra attention on roller coaster because unlike other subjects, roller coaster's failure can cause severe consequence --- no one can escape once a roller coaster is launched. First, they should regularly maintain the roller coaster, in order to reduce mechanical failure. Second, train the staff and ask them to check to-do list every time launch the equipments. Third, ask visitors to follow the safety guide. Furthermore, visitors should also protect their head, neck and shoulder. Those body parts are vulnerable and important and they are always injuried in amusement park injury cases.
+
+```{r bag, fig.cap="kkkk"}
 word_list <- list("mouth", "knee", "shoulder", "foot", "back", "neck", "leg", "tail", "ankle", "tooth", "forearm", "lip", "finger", "seizure", "elbow", "face", "nose", "chin", "eye", "eyebrow", "forehead", "wrist", "ear", "genital", "knot", "hand", "abdomen", "arm", "clavical", "cheek", "chest", "glute", "rib", "toe", "jaw", "thumb", "teeth", "stomach", "groin", "hip", "clavicle", "skin", "eyelid", "collar", "vagina", "spleen", "butt", "body", "midsection", "torso")
 
 temp <- tx_injuries
@@ -478,11 +476,39 @@ my_replace <- function(temp, a, b){
 }
 
 temp <- temp %>%
-  my_replace(c("eyelid", "eyebrow"), "eye") %>%
-  my_replace("clavical", "clavicle")
-  
-  
+  my_replace(c("mouth", "tooth", "lip", "seizure", "face", "nose", "chin", "eye", "eyebrow", "forehead", "ear", "cheek", "jaw", "teeth", "eyelid"), "head") %>%
+  my_replace(c("neck"), "neck") %>%
+  my_replace(c("back", "tail", "genital", "knot", "abdomen", "clavical", "chest", "glute", "stomach", "groin", "hip", "clavicle", "collar", "vagina", "spleen", "butt", "body", "midsection"), "torso") %>%
+  my_replace(c("shoulder", "forearm", "finger", "elbow", "wrist", "hand", "arm", "thumb"), "upper limbs") %>%
+  my_replace(c("knee", "foot", "leg", "ankle", "rib", "toe"), "lower limbs")
+
+temp <- mutate(temp, age = as.numeric(age))
+temp <- filter(temp, age > 0) %>%
+filter(body_part_clean != "skin") %>%
+mutate(body_part = body_part_clean) %>%
+filter(gender %in% c("F", "M"))
+
+p <- temp %>%
+  ggplot() +
+  geom_violin(aes(body_part, age, col = gender), draw_quantiles = c(0.25,0.5,0.75) ) +
+  xlab("Body part injured") +
+  ylab("Age")
+
+p
 ```
+
+```{r yb, fig.cap="sdfsjl"}
+temp %>%
+  group_by(injury_year, body_part) %>%
+  summarise(count = n()) %>%
+  ggplot() +
+  geom_point(aes(injury_year, count, col = body_part)) +
+  geom_line(aes(injury_year, count, col = body_part)) -> p
+
+ggplotly(p)
+```
+
+
 
 
 ## State level analysis
