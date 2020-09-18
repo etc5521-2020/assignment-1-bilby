@@ -440,7 +440,7 @@ accidents_insurance_fig <- tx_comp_summary %>%
 ggplotly(accidents_insurance_fig)
 ```
 
-## what are the most frequent words in injury description? And what are the characteristics of body part injured related to age, gender and year?
+## What are the most frequent words in injury description? And what are the characteristics of body part injured related to age, gender and year?
 
 ```{r sq1-wordcloud, fig.cap = "Injury description --- word cloud. Words that are biggest are neck, upper limbs and lower limbs."}
 data(stop_words)
